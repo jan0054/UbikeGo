@@ -1,0 +1,5 @@
+pod 'RestKit'
+pod 'MagicalRecord', '~> 2.2'
+pod 'HTAutocompleteTextField'
+pod 'MBProgressHUD', '~> 0.8'
+pod 'SZTextView', '~> 1.1'
