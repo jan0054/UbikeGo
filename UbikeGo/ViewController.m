@@ -31,32 +31,64 @@ bool nearybylistishidden;
 @synthesize nearbystationarray;
 @synthesize pullrefresh;
 @synthesize colorblindmode;
+@synthesize degreeunitisC;
+@synthesize currentlang;
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
 	self.mainmap.showsUserLocation=YES;
-    [self getweatheronline];
-
-    //disable click logo, can enable in future if we need to
-    self.logo_button_outlet.userInteractionEnabled=NO;
-    //also hide the arrow
-    self.up_down_arrow__outlet.hidden=YES;
     
     self.walker_image.layer.cornerRadius=2;
     
+    //get saved colorblind, degree unit, and language settings, then setup ui
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    if ([defaults integerForKey:@"colorblindmode"]==1)
+    self.colorblindmode = [defaults boolForKey:@"colorblindmode"];
+    self.degreeunitisC = [defaults boolForKey:@"degreeunitisC"];
+    self.currentlang = [defaults integerForKey:@"currentlang"];
+    switch (self.currentlang) {
+        case 1:
+            [self.switch_lang_button setTitle:@"中文" forState:UIControlStateNormal];
+            [self.switch_lang_button setTitle:@"中文" forState:UIControlStateHighlighted];
+            self.currentlang_state_label.text = @"English";
+            self.currentlang_image.image = [UIImage imageNamed:@"lang_en.png"];
+            break;
+        case 0:
+            [self.switch_lang_button setTitle:@"English" forState:UIControlStateNormal];
+            [self.switch_lang_button setTitle:@"English" forState:UIControlStateHighlighted];
+            self.currentlang_state_label.text = @"中文";
+            self.currentlang_image.image = [UIImage imageNamed:@"lang_ch.png"];
+            break;
+        default:
+            break;
+    }
+    if (self.colorblindmode)
     {
-        [self.colorblind_outlet setOn:YES animated:YES];
-        NSLog(@"ON LOAD: colorblindmode found to be on");
+        [self.colorblind_button setTitle:@"關" forState:UIControlStateNormal];
+        [self.colorblind_button setTitle:@"關" forState:UIControlStateHighlighted];
+        self.colorblind_state_label.text = @"色盲好讀模式";
+        self.coloblind_image.image = [UIImage imageNamed:@"colorblind_on.png"];
     }
     else
     {
-        [self.colorblind_outlet setOn:NO animated:YES];
-        NSLog(@"ON LOAD: colorblindmode found to be off");
+        [self.colorblind_button setTitle:@"開" forState:UIControlStateNormal];
+        [self.colorblind_button setTitle:@"開" forState:UIControlStateHighlighted];
+        self.colorblind_state_label.text = @"正常模式";
+        self.coloblind_image.image = [UIImage imageNamed:@"colorblind_off.png"];
     }
+    if (self.degreeunitisC)
+    {
+        [self.degree_unit_button setTitle:@"°F" forState:UIControlStateNormal];
+        [self.degree_unit_button setTitle:@"°F" forState:UIControlStateHighlighted];
+    }
+    else
+    {
+        [self.degree_unit_button setTitle:@"°C" forState:UIControlStateNormal];
+        [self.degree_unit_button setTitle:@"°C" forState:UIControlStateHighlighted];
+    }
+
     
+    //init data structure
     self.fullstationdict = [[NSMutableDictionary alloc] init];
     self.nearbystationarray = [[NSMutableArray alloc] init];
     NSManagedObjectContext *localContext = [NSManagedObjectContext MR_contextForCurrentThread];
@@ -66,6 +98,7 @@ bool nearybylistishidden;
         [self.fullstationdict setObject:station forKey:station.sid];
     }
     
+    //styling
     self.infobar.barStyle = UIBarStyleDefault;
     self.infobar.opaque=NO;
     self.infobar.translucent=YES;
@@ -77,6 +110,7 @@ bool nearybylistishidden;
     
     [self setupNearbyListAtLocation:self.mainmap.userLocation.coordinate];
 
+    //nearby station list is initially hidden
     nearybylistishidden=YES;
     
     //Pull To Refresh Controls
@@ -84,6 +118,9 @@ bool nearybylistishidden;
     [pullrefresh addTarget:self action:@selector(refreshctrl:) forControlEvents:UIControlEventValueChanged];
     [self.nearby_list_table addSubview:pullrefresh];
     
+    [self getweatheronline];
+    
+    //Shadows
     UIBezierPath *shadowPath = [UIBezierPath bezierPathWithRect:self.menubar.bounds];
     self.menubar.layer.masksToBounds = NO;
     self.menubar.layer.shadowColor = [UIColor blackColor].CGColor;
@@ -134,6 +171,7 @@ bool nearybylistishidden;
     [self center_on_taipei_and_refresh];
 }
 
+//ui layout
 - (void) viewDidLayoutSubviews
 {
     //initial start: hide the top menu and the bottom nearby station list
@@ -146,6 +184,7 @@ bool nearybylistishidden;
     {}
     else
     {
+        //special layout for 3.5 inch screen
         self.refresh_outlet.frame = CGRectMake(20, 404, 44, 44);
         self.smallmenu_outlet.frame = CGRectMake(138, 404, 44, 44);
         self.center_outlet.frame = CGRectMake(256, 404, 44, 44);
@@ -169,6 +208,7 @@ bool nearybylistishidden;
     }
 }
 
+//center map on user and a 750 meter radius
 -(void) center_on_user
 {
     MKUserLocation *userLocation = self.mainmap.userLocation;
@@ -178,6 +218,7 @@ bool nearybylistishidden;
     [self.mainmap setRegion:region animated:YES];
 }
 
+//center map on user and a 1250 meter radius, also call refresh on the bike list
 -(void) center_on_user_and_refresh
 {
     MKUserLocation *userLocation = self.mainmap.userLocation;
@@ -188,6 +229,7 @@ bool nearybylistishidden;
     [self setupDynamicList];
 }
 
+//used at app start, center on taipei central station and a 2250 meter radius, also refreshes the bike list
 -(void) center_on_taipei_and_refresh
 {
     double tpelat = 25.04778;
@@ -211,6 +253,7 @@ didUpdateUserLocation:
     userLocation.title = @"";
 }
 
+//get bike numbers for all stations
 - (void) setupDynamicList
 {
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKStation class]];
@@ -270,6 +313,7 @@ didUpdateUserLocation:
     [operation start];
 }
 
+//get nearby stations and their bike numbers, centered at a coordinate
 - (void) setupNearbyListAtLocation: (CLLocationCoordinate2D) coordinate
 {
     double userlat = coordinate.latitude;
@@ -393,8 +437,18 @@ didUpdateUserLocation:
         NSLog(@"DRAW ANNO VIEW:GREEN %@, %d", somemapstation.name, somemapstation.currentbikes);
         if (somemapstation.currentbikes >= 5)
         {
-            annotationView.image = [UIImage imageNamed:@"green.png"];
-            NSLog(@"DRAW ANNO VIEW:GREEN %@, %d", somemapstation.name, somemapstation.currentbikes);
+            float percentagefull = (float)somemapstation.currentbikes / (float) somemapstation.total;
+            if (percentagefull > 0.75)
+            {
+                annotationView.image = [UIImage imageNamed:@"greenfull.png"];
+                NSLog(@"DRAW ANNO VIEW:GREENFULL %@, %d", somemapstation.name, somemapstation.currentbikes);
+
+            }
+            else
+            {
+                annotationView.image = [UIImage imageNamed:@"green.png"];
+                NSLog(@"DRAW ANNO VIEW:GREEN %@, %d", somemapstation.name, somemapstation.currentbikes);
+            }
         }
         else if (somemapstation.currentbikes >=1)
         {
@@ -427,9 +481,21 @@ didUpdateUserLocation:
         self.subtitle_label.text = [NSString stringWithFormat:@"單車: %d | 車位: %d", somemapstation.currentbikes, somemapstation.emptyslots];
         self.main_number_label.textColor = [self determine_color:somemapstation.currentbikes];
         NSLog(@"ANNOTATION BIKE NUM: %d", somemapstation.currentbikes);
+
+        if (view.image == [UIImage imageNamed:@"greenfull.png"])
+        {
+            UIImage * toImage = [UIImage imageNamed:@"greenfull_sel.png"];
+            [UIView transitionWithView:view
+                              duration:0.5f
+                               options:UIViewAnimationOptionTransitionFlipFromLeft
+                            animations:^{
+                                view.image = toImage;
+                            } completion:nil];
+        }
+
         if (view.image == [UIImage imageNamed:@"green.png"])
         {
-            UIImage * toImage = [UIImage imageNamed:@"greensel.png"];
+            UIImage * toImage = [UIImage imageNamed:@"green_sel.png"];
             [UIView transitionWithView:view
                               duration:0.5f
                                options:UIViewAnimationOptionTransitionFlipFromLeft
@@ -439,7 +505,7 @@ didUpdateUserLocation:
         }
         if (view.image == [UIImage imageNamed:@"yellow.png"])
         {
-            UIImage * toImage = [UIImage imageNamed:@"yellowsel.png"];
+            UIImage * toImage = [UIImage imageNamed:@"yellow_sel.png"];
             [UIView transitionWithView:view
                               duration:0.5f
                                options:UIViewAnimationOptionTransitionFlipFromLeft
@@ -449,7 +515,7 @@ didUpdateUserLocation:
         }
         if (view.image == [UIImage imageNamed:@"red.png"])
         {
-            UIImage * toImage = [UIImage imageNamed:@"redsel.png"];
+            UIImage * toImage = [UIImage imageNamed:@"red_sel.png"];
             [UIView transitionWithView:view
                               duration:0.5f
                                options:UIViewAnimationOptionTransitionFlipFromLeft
@@ -473,7 +539,17 @@ didUpdateUserLocation:
         self.navdistance_label.text=@"";
         self.navtime_label.text = @"";
         
-        if (view.image == [UIImage imageNamed:@"greensel.png"])
+        if (view.image == [UIImage imageNamed:@"greenfull_sel.png"])
+        {
+            UIImage * toImage = [UIImage imageNamed:@"greenfull.png"];
+            [UIView transitionWithView:view
+                              duration:0.5f
+                               options:UIViewAnimationOptionTransitionFlipFromRight
+                            animations:^{
+                                view.image = toImage;
+                            } completion:nil];
+        }
+        if (view.image == [UIImage imageNamed:@"green_sel.png"])
         {
             UIImage * toImage = [UIImage imageNamed:@"green.png"];
             [UIView transitionWithView:view
@@ -483,7 +559,7 @@ didUpdateUserLocation:
                                 view.image = toImage;
                             } completion:nil];
         }
-        if (view.image == [UIImage imageNamed:@"yellowsel.png"])
+        if (view.image == [UIImage imageNamed:@"yellow_sel.png"])
         {
             UIImage * toImage = [UIImage imageNamed:@"yellow.png"];
             [UIView transitionWithView:view
@@ -493,7 +569,7 @@ didUpdateUserLocation:
                                 view.image = toImage;
                             } completion:nil];
         }
-        if (view.image == [UIImage imageNamed:@"redsel.png"])
+        if (view.image == [UIImage imageNamed:@"red_sel.png"])
         {
             UIImage * toImage = [UIImage imageNamed:@"red.png"];
             [UIView transitionWithView:view
@@ -547,19 +623,23 @@ didUpdateUserLocation:
     return routeLineRenderer;
 }
 
+//refresh button on map
 - (IBAction)refresh_action:(UIButton *)sender {
     [self setupDynamicList];
     [self getweatheronline];
 }
 
+//center button on map
 - (IBAction)center_action:(UIButton *)sender {
     [self center_on_user];
 }
 
+//upper right corner navigate button
 - (IBAction)navigate_action:(UIButton *)sender {
     [self routeUserToDestination:selected_station_cord withoverlay: YES];
 }
 
+//long press on map
 - (IBAction)longpressonmap:(UILongPressGestureRecognizer *)sender {
     NSLog(@"LONG PRESS");
     
@@ -580,6 +660,7 @@ didUpdateUserLocation:
     [self update_arrow_state];
 }
 
+//short press on map
 - (IBAction)taponmap:(UITapGestureRecognizer *)sender {
     NSLog(@"short tap");
     if (nearybylistishidden)
@@ -599,27 +680,16 @@ didUpdateUserLocation:
     }
 }
 
+//upper left button (私房行程)
 - (IBAction)open_menu_action:(UIButton *)sender {
-
-    if (self.setting_view.frame.origin.y==566)
-    {
-        [UIView animateWithDuration:0.5 animations:^{
-            self.setting_view.frame = CGRectMake(0, 90, 320, 477);
-            self.inapplogoview.frame = CGRectMake(0, 566, 320, 200);
-        }];
-    }
-    else if (self.setting_view.frame.origin.y==90)
-    {
-        [UIView animateWithDuration:0.5 animations:^{
-            self.setting_view.frame = CGRectMake(0, 566, 320, 477);
-            self.inapplogoview.frame = CGRectMake(0, 566, 320, 200);
-        }];
-
-    }
-    
+    [UIView animateWithDuration:0.5 animations:^{
+        self.setting_view.frame = CGRectMake(0, 566, 320, 477);
+        self.inapplogoview.frame = CGRectMake(0, 367, 320, 200);
+    }];
     [self update_arrow_state];
 }
 
+//pressed "附近站點" on upper right
 - (IBAction)open_map_action:(UIButton *)sender {
     [UIView animateWithDuration:0.5 animations:^{
         self.setting_view.frame = CGRectMake(0, 566, 320, 477);
@@ -680,23 +750,27 @@ didUpdateUserLocation:
     [(UIRefreshControl *)sender endRefreshing];
 }
 
+//setting view, "rate us" button
 - (IBAction)rate_app_action:(UIButton *)sender {
 }
 
+//setting view, "email us" button
 - (IBAction)email_us_action:(UIButton *)sender {
     [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"mailto://csjan@tapgo.cc"]];
 }
 
+//setting view, "tos" button
 - (IBAction)tos_action:(UIButton *)sender {
     [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"http://tapgo.cc/tw/?page_id=1060"]];
 }
 
+//setting view, "share" button
 - (IBAction)sharetofb_action:(UIButton *)sender {
     NSURL *url = [NSURL URLWithString:@"fb://profile/304427062990226"];
     [[UIApplication sharedApplication] openURL:url];
-
 }
 
+//mid hamburger button on map
 - (IBAction)smallmenu_action:(UIButton *)sender {
     [self setupNearbyListAtLocation:self.mainmap.userLocation.coordinate];
     
@@ -713,46 +787,46 @@ didUpdateUserLocation:
     [self center_on_user];
     nearybylistishidden=NO;
     [self update_arrow_state];
-
 }
+
+//tap ubike logo on top mid
 - (IBAction)logo_button_action:(UIButton *)sender {
-    [UIView animateWithDuration:0.5 animations:^{
-        self.setting_view.frame = CGRectMake(0, 566, 320, 477);
-        self.inapplogoview.frame = CGRectMake(0, 367, 320, 200);
-    }];
+    
+    
+    if (self.setting_view.frame.origin.y==566)
+    {
+        [UIView animateWithDuration:0.5 animations:^{
+            self.setting_view.frame = CGRectMake(0, 90, 320, 477);
+            self.inapplogoview.frame = CGRectMake(0, 566, 320, 200);
+        }];
+    }
+    else if (self.setting_view.frame.origin.y==90)
+    {
+        [UIView animateWithDuration:0.5 animations:^{
+            self.setting_view.frame = CGRectMake(0, 566, 320, 477);
+            self.inapplogoview.frame = CGRectMake(0, 566, 320, 200);
+        }];
+        
+    }
+    
     [self update_arrow_state];
-}
 
-- (IBAction)colorblind_toggle:(UISwitch *)sender {
-    if ([self.colorblind_outlet isOn])
-    {
-        NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-        [defaults setInteger:1 forKey:@"colorblindmode"];
-        [defaults synchronize];
-        NSLog(@"colorblind mode turned on");
-    }
-    else
-    {
-        NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-        [defaults setInteger:0 forKey:@"colorblindmode"];
-        [defaults synchronize];
-        NSLog(@"colorblind mode turned off");
-    }
 }
 
 //determines the state of the green arrow next to the logo
 - (void) update_arrow_state
 {
-    if (self.inapplogoview.frame.origin.y==566)
+    if (self.setting_view.frame.origin.y==566)
     {
         self.up_down_arrow__outlet.image = [UIImage imageNamed:@"arrow_down.png"];
     }
-    else if (self.inapplogoview.frame.origin.y==367)
+    else if (self.setting_view.frame.origin.y==367)
     {
         self.up_down_arrow__outlet.image = [UIImage imageNamed:@"arrow_up.png"];
     }
 }
 
+//grab weather data from openweathermap
 - (void) getweatheronline
 {
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKWeather class]];
@@ -761,7 +835,26 @@ didUpdateUserLocation:
                                                   @"main":@"main"
                                                   }];
     RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:mapping method:RKRequestMethodGET pathPattern:nil keyPath:@"" statusCodes:nil];
-    NSURL *url = [NSURL URLWithString:@"http://api.openweathermap.org/data/2.5/weather?q=Taipei&lang=zh_tw&units=metric"];
+    
+    NSString *unit = @"metric";
+    NSString *lang = @"zh_tw";
+    if (!self.degreeunitisC)
+    {
+        unit = @"imperial";
+    }
+    switch (self.currentlang) {
+        case 0:
+            break;
+        case 1:
+            lang = @"en";
+            break;
+        default:
+            break;
+    }
+    
+    NSString *urlstr = [NSString stringWithFormat:@"http://api.openweathermap.org/data/2.5/weather?q=Taipei&lang=%@&units=%@", lang, unit];
+    NSURL *url = [NSURL URLWithString:urlstr];
+    
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
     RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[responseDescriptor]];
     
@@ -774,9 +867,19 @@ didUpdateUserLocation:
             NSDictionary *mainarraydict = [mainarray objectAtIndex:0];
             NSString *iconname = [mainarraydict objectForKey:@"icon"];
             NSString *weather_desc = [mainarraydict objectForKey:@"description"];
-            NSString *temp = [weatherdict objectForKey:@"temp"];
+            //NSString *temp = [weatherdict objectForKey:@"temp"];
+            NSNumber *nstempnum = [weatherdict objectForKey:@"temp"];
+            float tempfloat = [nstempnum floatValue];
+            NSString *temp = [NSString stringWithFormat:@"%.01f", tempfloat];
             self.weatherimage.image = [UIImage imageNamed:iconname];
-            self.weatherlabel.text = [NSString stringWithFormat:@"%@度 %@",temp, weather_desc];
+            if (self.degreeunitisC)
+            {
+                self.weatherlabel.text = [NSString stringWithFormat:@"%@°C %@",temp, weather_desc];
+            }
+            else
+            {
+                self.weatherlabel.text = [NSString stringWithFormat:@"%@°F %@",temp, weather_desc];
+            }
             NSLog(@"WEATHER:%@,%@,%@",iconname,temp,weather_desc);
         }
         
@@ -786,5 +889,82 @@ didUpdateUserLocation:
     }];
     [operation start];
 }
+
+//setting page, change weather degree unit
+- (IBAction)degree_unit_button_pressed:(UIButton *)sender {
+    self.degreeunitisC = !(self.degreeunitisC);
+    [self getweatheronline];
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    [defaults setBool:self.degreeunitisC forKey:@"degreeunitisC"];
+    [defaults synchronize];
+    if (self.degreeunitisC)
+    {
+        [self.degree_unit_button setTitle:@"°F" forState:UIControlStateNormal];
+        [self.degree_unit_button setTitle:@"°F" forState:UIControlStateHighlighted];
+    }
+    else
+    {
+        [self.degree_unit_button setTitle:@"°C" forState:UIControlStateNormal];
+        [self.degree_unit_button setTitle:@"°C" forState:UIControlStateHighlighted];
+    }
+}
+
+//setting page, toggle colorblind mode
+- (IBAction)colorblind_button_pressed:(UIButton *)sender {
+    self.colorblindmode = !(self.colorblindmode);
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    [defaults setBool:self.colorblindmode forKey:@"colorblindmode"];
+    [defaults synchronize];
+    if (self.colorblindmode)
+    {
+        [self.colorblind_button setTitle:@"關" forState:UIControlStateNormal];
+        [self.colorblind_button setTitle:@"關" forState:UIControlStateHighlighted];
+        self.colorblind_state_label.text = @"色盲好讀模式";
+        self.coloblind_image.image = [UIImage imageNamed:@"colorblind_on.png"];
+    }
+    else
+    {
+        [self.colorblind_button setTitle:@"開" forState:UIControlStateNormal];
+        [self.colorblind_button setTitle:@"開" forState:UIControlStateHighlighted];
+        self.colorblind_state_label.text = @"正常模式";
+        self.coloblind_image.image = [UIImage imageNamed:@"colorblind_off.png"];
+    }
+
+}
+
+//setting page, switch language
+- (IBAction)switch_lang_button_pressed:(UIButton *)sender {
+    switch (self.currentlang) {
+        case 0:
+            self.currentlang = 1;
+            [self.switch_lang_button setTitle:@"中文" forState:UIControlStateNormal];
+            [self.switch_lang_button setTitle:@"中文" forState:UIControlStateHighlighted];
+            self.currentlang_state_label.text = @"English";
+            self.currentlang_image.image = [UIImage imageNamed:@"lang_en.png"];
+            break;
+        case 1:
+            self.currentlang = 0;
+            [self.switch_lang_button setTitle:@"English" forState:UIControlStateNormal];
+            [self.switch_lang_button setTitle:@"English" forState:UIControlStateHighlighted];
+            self.currentlang_state_label.text = @"中文";
+            self.currentlang_image.image = [UIImage imageNamed:@"lang_ch.png"];
+            break;
+        default:
+            break;
+    }
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    [defaults setInteger:self.currentlang forKey:@"currentlang"];
+    [defaults synchronize];
+    [self getweatheronline];
+    
+}
+
+
+
+
+
+
+
+
 
 @end

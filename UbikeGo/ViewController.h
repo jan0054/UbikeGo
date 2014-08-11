@@ -47,11 +47,22 @@
 - (IBAction)logo_button_action:(UIButton *)sender;
 @property (strong, nonatomic) IBOutlet UIButton *logo_button_outlet;
 @property (strong, nonatomic) IBOutlet UIView *inapplogoview;
-- (IBAction)colorblind_toggle:(UISwitch *)sender;
-@property (strong, nonatomic) IBOutlet UISwitch *colorblind_outlet;
 @property (strong, nonatomic) IBOutlet UIImageView *weatherimage;
 @property (strong, nonatomic) IBOutlet UILabel *weatherlabel;
 @property (strong, nonatomic) IBOutlet UIImageView *walker_image;
 @property (strong, nonatomic) IBOutlet UIImageView *separator_line;
-@property int colorblindmode;
+@property BOOL colorblindmode;
+@property BOOL degreeunitisC;
+- (IBAction)degree_unit_button_pressed:(UIButton *)sender;
+@property (strong, nonatomic) IBOutlet UIButton *degree_unit_button;
+- (IBAction)colorblind_button_pressed:(UIButton *)sender;
+@property (strong, nonatomic) IBOutlet UIButton *colorblind_button;
+- (IBAction)switch_lang_button_pressed:(UIButton *)sender;
+@property (strong, nonatomic) IBOutlet UIButton *switch_lang_button;
+@property int currentlang;
+@property (strong, nonatomic) IBOutlet UILabel *colorblind_state_label;
+@property (strong, nonatomic) IBOutlet UILabel *currentlang_state_label;
+@property (strong, nonatomic) IBOutlet UIImageView *coloblind_image;
+@property (strong, nonatomic) IBOutlet UIImageView *currentlang_image;
+
 @end

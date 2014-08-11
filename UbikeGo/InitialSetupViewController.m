@@ -58,16 +58,22 @@ NSTimer *timer;
 {
     [super viewDidAppear:YES];
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    
     if (![defaults objectForKey:@"lastupdatedate"])
     {
+        [defaults setBool:YES forKey:@"degreeunitisC"];
+        [defaults setInteger:0 forKey:@"currentlang"];
+        [defaults setBool:NO forKey:@"colorblindmode"];
+        [defaults synchronize];
         [self startupdating];
     }
     else
     {
+        /*
         lastupdatedate = [defaults objectForKey:@"lastupdatedate"];
         NSDate *rightnow = [NSDate date];
         int updatedays = [self daysBetween:rightnow and:lastupdatedate];
-        if (updatedays>=7)
+        if (updatedays<=7)
         {
             [self startupdating];
         }
@@ -75,6 +81,8 @@ NSTimer *timer;
         {
             [self exitupdate];
         }
+        */
+        [self exitupdate];
     }
 }
 
