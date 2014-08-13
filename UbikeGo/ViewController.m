@@ -33,6 +33,14 @@ bool nearybylistishidden;
 @synthesize colorblindmode;
 @synthesize degreeunitisC;
 @synthesize currentlang;
+@synthesize fullgreen;
+@synthesize green;
+@synthesize yellow;
+@synthesize red;
+@synthesize green_sel;
+@synthesize fullgreen_sel;
+@synthesize yellow_sel;
+@synthesize red_sel;
 
 - (void)viewDidLoad
 {
@@ -108,6 +116,7 @@ bool nearybylistishidden;
     self.menubar.translucent=YES;
     self.menubar.layer.cornerRadius=3;
     
+    [self setup_annotaion_image_mode];
     [self setupNearbyListAtLocation:self.mainmap.userLocation.coordinate];
 
     //nearby station list is initially hidden
@@ -168,6 +177,7 @@ bool nearybylistishidden;
 - (void) viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:YES];
+    [self setup_annotaion_image_mode];
     [self center_on_taipei_and_refresh];
 }
 
@@ -194,19 +204,39 @@ bool nearybylistishidden;
 //calculate color of the number label according to bike number
 - (UIColor*) determine_color: (int) current
 {
-    if (current>=5)
+    if (!self.colorblindmode)
     {
-        return [UIColor colorWithRed:119.0f/255.0f green:190.0f/255.0f blue:67.0f/255.0f alpha:1.0];
-    }
-    else if (current>=1)
-    {
-        return [UIColor colorWithRed:246.0f/255.0f green:177.0f/255.0f blue:67.0f/255.0f alpha:1.0];
+        if (current>=5)
+        {
+            return [UIColor colorWithRed:81.0f/255.0f green:165.0f/255.0f blue:15.0f/255.0f alpha:1.0];
+        }
+        else if (current>=1)
+        {
+            return [UIColor colorWithRed:234.0f/255.0f green:139.0f/255.0f blue:0.0f/255.0f alpha:1.0];
+        }
+        else
+        {
+            return [UIColor colorWithRed:238.0f/255.0f green:72.0f/255.0f blue:35.0f/255.0f alpha:1.0];
+        }
+
     }
     else
     {
-        return [UIColor colorWithRed:238.0f/255.0f green:72.0f/255.0f blue:35.0f/255.0f alpha:1.0];
+        if (current>=5)
+        {
+            return [UIColor colorWithRed:862.0f/255.0f green:96.0f/255.0f blue:36.0f/255.0f alpha:1.0];
+        }
+        else if (current>=1)
+        {
+            return [UIColor colorWithRed:96.0f/255.0f green:75.0f/255.0f blue:7.0f/255.0f alpha:1.0];
+        }
+        else
+        {
+            return [UIColor colorWithRed:168.0f/255.0f green:40.0f/255.0f blue:19.0f/255.0f alpha:1.0];
+        }
     }
-}
+    
+    }
 
 //center map on user and a 750 meter radius
 -(void) center_on_user
@@ -429,38 +459,53 @@ didUpdateUserLocation:
             annotationView.enabled = YES;
             //annotationView.canShowCallout = YES;
             
+            UILabel *bikenum_label = [[UILabel alloc] initWithFrame:CGRectMake(9, 10 , 10, 10)];
+            bikenum_label.backgroundColor = [UIColor clearColor];
+            bikenum_label.textColor = [UIColor whiteColor];
+            
+            bikenum_label.font = [UIFont fontWithName:@"Helvetica Neue" size:7];
+            bikenum_label.textAlignment = NSTextAlignmentCenter;
+            bikenum_label.tag = 66;
+            
+            [annotationView addSubview:bikenum_label];
+            
         } else {
             annotationView.annotation = annotation;
         }
         
         MapStation *somemapstation = annotation;
-        NSLog(@"DRAW ANNO VIEW:GREEN %@, %d", somemapstation.name, somemapstation.currentbikes);
         if (somemapstation.currentbikes >= 5)
         {
-            float percentagefull = (float)somemapstation.currentbikes / (float) somemapstation.total;
-            if (percentagefull > 0.75)
+            int total = somemapstation.currentbikes + somemapstation.emptyslots;
+            float percentagefull = (float)somemapstation.currentbikes / (float) total;
+            if (percentagefull > 0.5)
             {
-                annotationView.image = [UIImage imageNamed:@"greenfull.png"];
-                NSLog(@"DRAW ANNO VIEW:GREENFULL %@, %d", somemapstation.name, somemapstation.currentbikes);
-
+                annotationView.image = self.fullgreen;
             }
             else
             {
-                annotationView.image = [UIImage imageNamed:@"green.png"];
-                NSLog(@"DRAW ANNO VIEW:GREEN %@, %d", somemapstation.name, somemapstation.currentbikes);
+                annotationView.image = self.green;
             }
         }
         else if (somemapstation.currentbikes >=1)
         {
-            annotationView.image = [UIImage imageNamed:@"yellow.png"];
-            NSLog(@"DRAW ANNO VIEW:YELLOW %@, %d", somemapstation.name, somemapstation.currentbikes);
+            annotationView.image = self.yellow;
         }
         else if (somemapstation.currentbikes==0)
         {
-            annotationView.image = [UIImage imageNamed:@"red.png"];
-            NSLog(@"DRAW ANNO VIEW:RED %@, %d", somemapstation.name, somemapstation.currentbikes);
+            annotationView.image = self.red;
+        }
+        UILabel *bikenum = (UILabel *)[annotationView viewWithTag:66];
+        if (somemapstation.currentbikes != 0)
+        {
+            bikenum.text = [NSString stringWithFormat:@"%d",somemapstation.currentbikes];
+        }
+        else
+        {
+            bikenum.text = @"";
         }
 
+        
         return annotationView;
     }
     
@@ -475,27 +520,28 @@ didUpdateUserLocation:
         MapStation *somemapstation = view.annotation;
     
         self.name_label.text = somemapstation.name;
-        self.area_label.text = somemapstation.area;
+        self.area_label.text = somemapstation.district;
         selected_station_cord = somemapstation.stationCord;
         self.main_number_label.text = [NSString stringWithFormat:@"%d", somemapstation.currentbikes];
-        self.subtitle_label.text = [NSString stringWithFormat:@"單車: %d | 車位: %d", somemapstation.currentbikes, somemapstation.emptyslots];
+        self.subtitle_label.text = somemapstation.area;
         self.main_number_label.textColor = [self determine_color:somemapstation.currentbikes];
-        NSLog(@"ANNOTATION BIKE NUM: %d", somemapstation.currentbikes);
-
-        if (view.image == [UIImage imageNamed:@"greenfull.png"])
+        self.parking_spot_label.text = [NSString stringWithFormat:@"%d",somemapstation.emptyslots];
+        if (somemapstation.emptyslots>5)
         {
-            UIImage * toImage = [UIImage imageNamed:@"greenfull_sel.png"];
-            [UIView transitionWithView:view
-                              duration:0.5f
-                               options:UIViewAnimationOptionTransitionFlipFromLeft
-                            animations:^{
-                                view.image = toImage;
-                            } completion:nil];
+            self.parking_image.image = self.parking_green;
+        }
+        else if (somemapstation.emptyslots>0)
+        {
+            self.parking_image.image = self.parking_yellow;
+        }
+        else
+        {
+            self.parking_image.image = self.parking_red;
         }
 
-        if (view.image == [UIImage imageNamed:@"green.png"])
+        if (view.image == self.fullgreen)
         {
-            UIImage * toImage = [UIImage imageNamed:@"green_sel.png"];
+            UIImage * toImage = self.fullgreen_sel;
             [UIView transitionWithView:view
                               duration:0.5f
                                options:UIViewAnimationOptionTransitionFlipFromLeft
@@ -503,9 +549,10 @@ didUpdateUserLocation:
                                 view.image = toImage;
                             } completion:nil];
         }
-        if (view.image == [UIImage imageNamed:@"yellow.png"])
+
+        if (view.image == self.green)
         {
-            UIImage * toImage = [UIImage imageNamed:@"yellow_sel.png"];
+            UIImage * toImage = self.green_sel;
             [UIView transitionWithView:view
                               duration:0.5f
                                options:UIViewAnimationOptionTransitionFlipFromLeft
@@ -513,9 +560,9 @@ didUpdateUserLocation:
                                 view.image = toImage;
                             } completion:nil];
         }
-        if (view.image == [UIImage imageNamed:@"red.png"])
+        if (view.image == self.yellow)
         {
-            UIImage * toImage = [UIImage imageNamed:@"red_sel.png"];
+            UIImage * toImage = self.yellow_sel;
             [UIView transitionWithView:view
                               duration:0.5f
                                options:UIViewAnimationOptionTransitionFlipFromLeft
@@ -523,7 +570,17 @@ didUpdateUserLocation:
                                 view.image = toImage;
                             } completion:nil];
         }
-    
+        if (view.image == self.red)
+        {
+            UIImage * toImage = self.red_sel;
+            [UIView transitionWithView:view
+                              duration:0.5f
+                               options:UIViewAnimationOptionTransitionFlipFromLeft
+                            animations:^{
+                                view.image = toImage;
+                            } completion:nil];
+        }
+        
         [UIView animateWithDuration:0.3 animations:^{
             self.infobar.frame= CGRectMake(0, 0, 320, 90);
         }];
@@ -539,9 +596,9 @@ didUpdateUserLocation:
         self.navdistance_label.text=@"";
         self.navtime_label.text = @"";
         
-        if (view.image == [UIImage imageNamed:@"greenfull_sel.png"])
+        if (view.image == self.fullgreen_sel)
         {
-            UIImage * toImage = [UIImage imageNamed:@"greenfull.png"];
+            UIImage * toImage = self.fullgreen;
             [UIView transitionWithView:view
                               duration:0.5f
                                options:UIViewAnimationOptionTransitionFlipFromRight
@@ -549,9 +606,9 @@ didUpdateUserLocation:
                                 view.image = toImage;
                             } completion:nil];
         }
-        if (view.image == [UIImage imageNamed:@"green_sel.png"])
+        if (view.image == self.green_sel)
         {
-            UIImage * toImage = [UIImage imageNamed:@"green.png"];
+            UIImage * toImage = self.green;
             [UIView transitionWithView:view
                               duration:0.5f
                                options:UIViewAnimationOptionTransitionFlipFromRight
@@ -559,9 +616,9 @@ didUpdateUserLocation:
                                 view.image = toImage;
                             } completion:nil];
         }
-        if (view.image == [UIImage imageNamed:@"yellow_sel.png"])
+        if (view.image == self.yellow_sel)
         {
-            UIImage * toImage = [UIImage imageNamed:@"yellow.png"];
+            UIImage * toImage = self.yellow;
             [UIView transitionWithView:view
                               duration:0.5f
                                options:UIViewAnimationOptionTransitionFlipFromRight
@@ -569,9 +626,9 @@ didUpdateUserLocation:
                                 view.image = toImage;
                             } completion:nil];
         }
-        if (view.image == [UIImage imageNamed:@"red_sel.png"])
+        if (view.image == self.red_sel)
         {
-            UIImage * toImage = [UIImage imageNamed:@"red.png"];
+            UIImage * toImage = self.red;
             [UIView transitionWithView:view
                               duration:0.5f
                                options:UIViewAnimationOptionTransitionFlipFromRight
@@ -579,6 +636,7 @@ didUpdateUserLocation:
                                 view.image = toImage;
                             } completion:nil];
         }
+        
 
         [UIView animateWithDuration:0.3 animations:^{
             self.infobar.frame= CGRectMake(0, -90, 320, 90);
@@ -641,7 +699,6 @@ didUpdateUserLocation:
 
 //long press on map
 - (IBAction)longpressonmap:(UILongPressGestureRecognizer *)sender {
-    NSLog(@"LONG PRESS");
     
     [self setupNearbyListAtLocation:self.mainmap.userLocation.coordinate];
     
@@ -662,7 +719,6 @@ didUpdateUserLocation:
 
 //short press on map
 - (IBAction)taponmap:(UITapGestureRecognizer *)sender {
-    NSLog(@"short tap");
     if (nearybylistishidden)
     {
         [self.mainmap removeOverlays:self.mainmap.overlays];
@@ -717,9 +773,23 @@ didUpdateUserLocation:
     cell.current_bikes_label.textColor = [self determine_color:[station.currentbikes intValue]];
     cell.navdistance_label.text = [NSString stringWithFormat:@"%d公尺",[station.distance intValue]];
     cell.navtime_label.text = [NSString stringWithFormat:@"%d分鐘",[station.distance intValue]/80];
-    cell.area_label.text = station.description_ch;
-    cell.subtitle_label.text = [NSString stringWithFormat:@"單車:%d | 車位:%d", [station.currentbikes intValue], [station.total intValue]];
+    cell.area_label.text = station.district_ch;
+    cell.subtitle_label.text = station.description_ch;
+    int empty = [station.emptyslots intValue];
+    cell.parking_spot_label.text = [NSString stringWithFormat:@"%d",empty];
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    if (empty >5)
+    {
+        cell.parking_image.image = self.parking_green;
+    }
+    else if (empty >0)
+    {
+        cell.parking_image.image = self.parking_yellow;
+    }
+    else
+    {
+        cell.parking_image.image = self.parking_red;
+    }
     
     return cell;
 }
@@ -820,7 +890,7 @@ didUpdateUserLocation:
     {
         self.up_down_arrow__outlet.image = [UIImage imageNamed:@"arrow_down.png"];
     }
-    else if (self.setting_view.frame.origin.y==367)
+    else if (self.setting_view.frame.origin.y==90)
     {
         self.up_down_arrow__outlet.image = [UIImage imageNamed:@"arrow_up.png"];
     }
@@ -915,6 +985,7 @@ didUpdateUserLocation:
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     [defaults setBool:self.colorblindmode forKey:@"colorblindmode"];
     [defaults synchronize];
+    
     if (self.colorblindmode)
     {
         [self.colorblind_button setTitle:@"關" forState:UIControlStateNormal];
@@ -929,7 +1000,9 @@ didUpdateUserLocation:
         self.colorblind_state_label.text = @"正常模式";
         self.coloblind_image.image = [UIImage imageNamed:@"colorblind_off.png"];
     }
-
+    
+    [self setup_annotaion_image_mode];
+    [self setupDynamicList];
 }
 
 //setting page, switch language
@@ -959,8 +1032,39 @@ didUpdateUserLocation:
     
 }
 
+//set up annotation images according to colorblind mode on/off
+- (void) setup_annotaion_image_mode
+{
+    if (self.colorblindmode)
+    {
+        self.fullgreen = [UIImage imageNamed:@"cb_greenfull.png"];
+        self.green = [UIImage imageNamed:@"cb_green.png"];
+        self.yellow = [UIImage imageNamed:@"cb_yellow.png"];
+        self.red = [UIImage imageNamed:@"cb_red.png"];
+        self.fullgreen_sel = [UIImage imageNamed:@"cb_greenfull_sel.png"];
+        self.green_sel = [UIImage imageNamed:@"cb_green_sel.png"];
+        self.yellow_sel = [UIImage imageNamed:@"cb_yellow_sel.png"];
+        self.red_sel = [UIImage imageNamed:@"cb_red_sel.png"];
+        self.parking_green = [UIImage imageNamed:@"cb_parking_green.png"];
+        self.parking_yellow = [UIImage imageNamed:@"cb_parking_yellow.png"];
+        self.parking_red = [UIImage imageNamed:@"cb_parking_red.png"];
+    }
+    else
+    {
+        self.fullgreen = [UIImage imageNamed:@"greenfull.png"];
+        self.green = [UIImage imageNamed:@"green.png"];
+        self.yellow = [UIImage imageNamed:@"yellow.png"];
+        self.red = [UIImage imageNamed:@"red.png"];
+        self.fullgreen_sel = [UIImage imageNamed:@"greenfull_sel.png"];
+        self.green_sel = [UIImage imageNamed:@"green_sel.png"];
+        self.yellow_sel = [UIImage imageNamed:@"yellow_sel.png"];
+        self.red_sel = [UIImage imageNamed:@"red_sel.png"];
+        self.parking_green = [UIImage imageNamed:@"parking_green.png"];
+        self.parking_yellow = [UIImage imageNamed:@"parking_yellow.png"];
+        self.parking_red = [UIImage imageNamed:@"parking_red.png"];
+    }
 
-
+}
 
 
 

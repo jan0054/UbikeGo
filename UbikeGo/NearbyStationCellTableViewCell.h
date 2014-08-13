@@ -15,5 +15,8 @@
 @property (strong, nonatomic) IBOutlet UILabel *name_label;
 @property (strong, nonatomic) IBOutlet UILabel *current_bikes_label;
 @property (strong, nonatomic) IBOutlet UILabel *subtitle_label;
+@property (strong, nonatomic) IBOutlet UIView *parking_view;
+@property (strong, nonatomic) IBOutlet UILabel *parking_spot_label;
+@property (strong, nonatomic) IBOutlet UIImageView *parking_image;
 
 @end

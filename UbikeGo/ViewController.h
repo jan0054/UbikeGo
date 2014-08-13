@@ -64,5 +64,19 @@
 @property (strong, nonatomic) IBOutlet UILabel *currentlang_state_label;
 @property (strong, nonatomic) IBOutlet UIImageView *coloblind_image;
 @property (strong, nonatomic) IBOutlet UIImageView *currentlang_image;
+@property UIImage *fullgreen;
+@property UIImage *green;
+@property UIImage *yellow;
+@property UIImage *red;
+@property UIImage *fullgreen_sel;
+@property UIImage *green_sel;
+@property UIImage *yellow_sel;
+@property UIImage *red_sel;
+@property UIImage *parking_green;
+@property UIImage *parking_yellow;
+@property UIImage *parking_red;
+@property (strong, nonatomic) IBOutlet UILabel *parking_spot_label;
+@property (strong, nonatomic) IBOutlet UIImageView *parking_image;
+
 
 @end
