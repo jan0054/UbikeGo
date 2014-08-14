@@ -1,0 +1,22 @@
+/* 
+  Localizable.strings
+  UbikeGo
+
+  Created by csjan on 8/13/14.
+  Copyright (c) 2014 tapgo. All rights reserved.
+*/
+
+"逾時" = "逾時" ;
+"無法更新站點資訊, 請檢查網路連線" = "無法更新站點資訊, 請檢查網路連線" ;
+"重試" = "重試" ;
+"關" = "關" ;
+"開" = "開" ;
+"正常模式" = "正常模式" ;
+"色盲好讀模式" = "色盲好讀模式" ;
+"在地圖任何一處長按可開啟選單" = "在地圖任何一處長按可開啟選單" ;
+"確定" = "確定" ;
+"分鐘" = "分鐘" ;
+"公尺" = "公尺" ;
+"提示" = "Alert";
+"某些語言設定將在重新啟動app之後生效" = "Some changes will take affect after the app is restarted.";
+"確認" = "Done";

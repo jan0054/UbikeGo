@@ -11,6 +11,7 @@
 #import <QuartzCore/QuartzCore.h>
 #import <CoreLocation/CoreLocation.h>
 
+@class Language;
 
 @interface ViewController : UIViewController<MKMapViewDelegate>
 @property (strong, nonatomic) IBOutlet MKMapView *mainmap;

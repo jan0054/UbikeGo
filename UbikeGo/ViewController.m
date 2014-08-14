@@ -16,6 +16,7 @@
 #import "NearbyStationCellTableViewCell.h"
 #import "RKWeather.h"
 
+
 #define IS_IPHONE_5 ( fabs( ( double )[ [ UIScreen mainScreen ] bounds ].size.height - ( double )568 ) < DBL_EPSILON )
 
 @interface ViewController ()
@@ -60,28 +61,33 @@ bool nearybylistishidden;
             [self.switch_lang_button setTitle:@"中文" forState:UIControlStateHighlighted];
             self.currentlang_state_label.text = @"English";
             self.currentlang_image.image = [UIImage imageNamed:@"lang_en.png"];
+            [[NSUserDefaults standardUserDefaults] setObject:[NSArray arrayWithObjects:@"en", @"zh-Hant", nil] forKey:@"AppleLanguages"];
+            [[NSUserDefaults standardUserDefaults] synchronize]; //to make the change immediate
+
             break;
         case 0:
             [self.switch_lang_button setTitle:@"English" forState:UIControlStateNormal];
             [self.switch_lang_button setTitle:@"English" forState:UIControlStateHighlighted];
             self.currentlang_state_label.text = @"中文";
             self.currentlang_image.image = [UIImage imageNamed:@"lang_ch.png"];
+            [[NSUserDefaults standardUserDefaults] setObject:[NSArray arrayWithObjects:@"zh-Hant", @"en", nil] forKey:@"AppleLanguages"];
+            [[NSUserDefaults standardUserDefaults] synchronize]; //to make the change immediate
             break;
         default:
             break;
     }
     if (self.colorblindmode)
     {
-        [self.colorblind_button setTitle:@"關" forState:UIControlStateNormal];
-        [self.colorblind_button setTitle:@"關" forState:UIControlStateHighlighted];
-        self.colorblind_state_label.text = @"色盲好讀模式";
+        [self.colorblind_button setTitle:NSLocalizedString(@"關", nil) forState:UIControlStateNormal];
+        [self.colorblind_button setTitle:NSLocalizedString(@"關", nil) forState:UIControlStateHighlighted];
+        self.colorblind_state_label.text = NSLocalizedString(@"色盲好讀模式", nil);
         self.coloblind_image.image = [UIImage imageNamed:@"colorblind_on.png"];
     }
     else
     {
-        [self.colorblind_button setTitle:@"開" forState:UIControlStateNormal];
-        [self.colorblind_button setTitle:@"開" forState:UIControlStateHighlighted];
-        self.colorblind_state_label.text = @"正常模式";
+        [self.colorblind_button setTitle:NSLocalizedString(@"開", nil) forState:UIControlStateNormal];
+        [self.colorblind_button setTitle:NSLocalizedString(@"開", nil) forState:UIControlStateHighlighted];
+        self.colorblind_state_label.text = NSLocalizedString(@"正常模式", nil);
         self.coloblind_image.image = [UIImage imageNamed:@"colorblind_off.png"];
     }
     if (self.degreeunitisC)
@@ -224,7 +230,7 @@ bool nearybylistishidden;
     {
         if (current>=5)
         {
-            return [UIColor colorWithRed:862.0f/255.0f green:96.0f/255.0f blue:36.0f/255.0f alpha:1.0];
+            return [UIColor colorWithRed:62.0f/255.0f green:96.0f/255.0f blue:36.0f/255.0f alpha:1.0];
         }
         else if (current>=1)
         {
@@ -423,7 +429,7 @@ didUpdateUserLocation:
         CLLocationCoordinate2D coordinate;
         coordinate.latitude = latdbl;
         coordinate.longitude = londbl;
-        MapStation *annotation = [[MapStation alloc] initWithName:station.name_ch area:station.description_ch district:station.district_ch total:total currentbikes:current emptyslots:empty coordinate:coordinate] ;
+        MapStation *annotation = [[MapStation alloc] initWithName:station.name_ch nameen:station.name_en area:station.description_ch areaen:station.description_en district:station.district_ch districten:station.district_en total:total currentbikes:current emptyslots:empty coordinate:coordinate];
         [self.mainmap addAnnotation:annotation];
     }
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
@@ -431,9 +437,9 @@ didUpdateUserLocation:
     {
         
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@""
-                                                        message:@"在地圖任何一處長按可開啟選單"
+                                                        message:NSLocalizedString(@"在地圖任何一處長按可開啟選單", nil)
                                                        delegate:self
-                                              cancelButtonTitle:@"確定"
+                                              cancelButtonTitle:NSLocalizedString(@"確定", nil)
                                               otherButtonTitles:nil];
         [alert show];
         [defaults setObject:@"1" forKey:@"longpressalert"];
@@ -519,13 +525,30 @@ didUpdateUserLocation:
         [self.mainmap removeOverlays:self.mainmap.overlays];
         MapStation *somemapstation = view.annotation;
     
-        self.name_label.text = somemapstation.name;
-        self.area_label.text = somemapstation.district;
+        switch (self.currentlang) {
+            case 0:
+                self.name_label.text = somemapstation.name;
+                self.area_label.text = somemapstation.district;
+                self.subtitle_label.text = somemapstation.area;
+                break;
+            case 1:
+                self.name_label.text = somemapstation.nameen;
+                self.area_label.text = somemapstation.districten;
+                self.subtitle_label.text = somemapstation.areaen;
+                break;
+
+            default:
+                self.name_label.text = somemapstation.nameen;
+                self.area_label.text = somemapstation.districten;
+                self.subtitle_label.text = somemapstation.areaen;
+                break;
+        }
+        
         selected_station_cord = somemapstation.stationCord;
         self.main_number_label.text = [NSString stringWithFormat:@"%d", somemapstation.currentbikes];
-        self.subtitle_label.text = somemapstation.area;
         self.main_number_label.textColor = [self determine_color:somemapstation.currentbikes];
         self.parking_spot_label.text = [NSString stringWithFormat:@"%d",somemapstation.emptyslots];
+        
         if (somemapstation.emptyslots>5)
         {
             self.parking_image.image = self.parking_green;
@@ -667,9 +690,11 @@ didUpdateUserLocation:
             }
             int minutes = floor(routeDetails.expectedTravelTime/60);
             //int seconds = trunc(routeDetails.expectedTravelTime - minutes * 60);
-            self.navdistance_label.text = [NSString stringWithFormat:@"%d分鐘", minutes];
+            NSString *minute = [NSString stringWithFormat:NSLocalizedString(@"分鐘", nil)];
+            NSString *meter = [NSString stringWithFormat:NSLocalizedString(@"公尺", nil)];
+            self.navdistance_label.text = [NSString stringWithFormat:@"%d%@", minutes, minute];
             int distance = (int)routeDetails.distance;
-            self.navtime_label.text = [NSString stringWithFormat:@"%d公尺", distance];
+            self.navtime_label.text = [NSString stringWithFormat:@"%d%@", distance, meter];
         }
     }];
 }
@@ -768,13 +793,35 @@ didUpdateUserLocation:
 {
     Station *station = [self.nearbystationarray objectAtIndex:indexPath.row];
     NearbyStationCellTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"nearbystationcell"];
-    cell.name_label.text = station.name_ch;
+    
+    switch (self.currentlang) {
+        case 0:
+            cell.name_label.text = station.name_ch;
+            cell.area_label.text = station.district_ch;
+            cell.subtitle_label.text = station.description_ch;
+            break;
+        case 1:
+            cell.name_label.text = station.name_en;
+            cell.area_label.text = station.district_en;
+            cell.subtitle_label.text = station.description_en;
+            break;
+            
+        default:
+            cell.name_label.text = station.name_en;
+            cell.area_label.text = station.district_en;
+            cell.subtitle_label.text = station.description_en;
+            break;
+    }
+
+    
+    
     cell.current_bikes_label.text = [NSString stringWithFormat:@"%d",[station.currentbikes intValue]];
     cell.current_bikes_label.textColor = [self determine_color:[station.currentbikes intValue]];
-    cell.navdistance_label.text = [NSString stringWithFormat:@"%d公尺",[station.distance intValue]];
-    cell.navtime_label.text = [NSString stringWithFormat:@"%d分鐘",[station.distance intValue]/80];
-    cell.area_label.text = station.district_ch;
-    cell.subtitle_label.text = station.description_ch;
+    NSString *minute = [NSString stringWithFormat:NSLocalizedString(@"分鐘", nil)];
+    NSString *meter = [NSString stringWithFormat:NSLocalizedString(@"公尺", nil)];
+    cell.navdistance_label.text = [NSString stringWithFormat:@"%d%@",[station.distance intValue], meter];
+    cell.navtime_label.text = [NSString stringWithFormat:@"%d%@",[station.distance intValue]/80, minute];
+    
     int empty = [station.emptyslots intValue];
     cell.parking_spot_label.text = [NSString stringWithFormat:@"%d",empty];
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
@@ -822,6 +869,7 @@ didUpdateUserLocation:
 
 //setting view, "rate us" button
 - (IBAction)rate_app_action:(UIButton *)sender {
+    [self gotoreview];
 }
 
 //setting view, "email us" button
@@ -988,20 +1036,21 @@ didUpdateUserLocation:
     
     if (self.colorblindmode)
     {
-        [self.colorblind_button setTitle:@"關" forState:UIControlStateNormal];
-        [self.colorblind_button setTitle:@"關" forState:UIControlStateHighlighted];
-        self.colorblind_state_label.text = @"色盲好讀模式";
+        [self.colorblind_button setTitle:NSLocalizedString(@"關", nil) forState:UIControlStateNormal];
+        [self.colorblind_button setTitle:NSLocalizedString(@"關", nil) forState:UIControlStateHighlighted];
+        self.colorblind_state_label.text = NSLocalizedString(@"色盲好讀模式", nil);
         self.coloblind_image.image = [UIImage imageNamed:@"colorblind_on.png"];
     }
     else
     {
-        [self.colorblind_button setTitle:@"開" forState:UIControlStateNormal];
-        [self.colorblind_button setTitle:@"開" forState:UIControlStateHighlighted];
-        self.colorblind_state_label.text = @"正常模式";
+        [self.colorblind_button setTitle:NSLocalizedString(@"開", nil) forState:UIControlStateNormal];
+        [self.colorblind_button setTitle:NSLocalizedString(@"開", nil) forState:UIControlStateHighlighted];
+        self.colorblind_state_label.text = NSLocalizedString(@"正常模式", nil);
         self.coloblind_image.image = [UIImage imageNamed:@"colorblind_off.png"];
     }
     
     [self setup_annotaion_image_mode];
+    [self.nearby_list_table reloadData];
     [self setupDynamicList];
 }
 
@@ -1014,6 +1063,8 @@ didUpdateUserLocation:
             [self.switch_lang_button setTitle:@"中文" forState:UIControlStateHighlighted];
             self.currentlang_state_label.text = @"English";
             self.currentlang_image.image = [UIImage imageNamed:@"lang_en.png"];
+            [[NSUserDefaults standardUserDefaults] setObject:[NSArray arrayWithObjects:@"en", @"zh-Hant", nil] forKey:@"AppleLanguages"];
+            [[NSUserDefaults standardUserDefaults] synchronize]; //to make the change immediate
             break;
         case 1:
             self.currentlang = 0;
@@ -1021,6 +1072,8 @@ didUpdateUserLocation:
             [self.switch_lang_button setTitle:@"English" forState:UIControlStateHighlighted];
             self.currentlang_state_label.text = @"中文";
             self.currentlang_image.image = [UIImage imageNamed:@"lang_ch.png"];
+            [[NSUserDefaults standardUserDefaults] setObject:[NSArray arrayWithObjects:@"zh-Hant", @"en", nil] forKey:@"AppleLanguages"];
+            [[NSUserDefaults standardUserDefaults] synchronize]; //to make the change immediate
             break;
         default:
             break;
@@ -1029,7 +1082,13 @@ didUpdateUserLocation:
     [defaults setInteger:self.currentlang forKey:@"currentlang"];
     [defaults synchronize];
     [self getweatheronline];
-    
+    [self.nearby_list_table reloadData];
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"提示", nil)
+                                                    message:NSLocalizedString(@"某些語言設定將在重新啟動app之後生效", nil)
+                                                   delegate:self
+                                          cancelButtonTitle:NSLocalizedString(@"確認", nil)
+                                          otherButtonTitles:nil];
+    [alert show];
 }
 
 //set up annotation images according to colorblind mode on/off
@@ -1066,8 +1125,11 @@ didUpdateUserLocation:
 
 }
 
-
-
+- (void) gotoreview
+{
+    NSString *str = @"http://itunes.apple.com/WebObjects/MZStore.woa/wa/viewContentsUserReviews?id=897404070&pageNumber=0&sortOrdering=2&type=Purple+Software&mt=8";
+    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:str]];
+}
 
 
 

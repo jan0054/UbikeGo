@@ -62,7 +62,21 @@ NSTimer *timer;
     if (![defaults objectForKey:@"lastupdatedate"])
     {
         [defaults setBool:YES forKey:@"degreeunitisC"];
-        [defaults setInteger:0 forKey:@"currentlang"];
+        
+        NSString * language = [[NSLocale preferredLanguages] objectAtIndex:0];
+        if ([language isEqualToString:@"zh-Hant"])
+        {
+            [defaults setInteger:0 forKey:@"currentlang"];
+        }
+        else if ([language isEqualToString:@"en"])
+        {
+            [defaults setInteger:1 forKey:@"currentlang"];
+        }
+        else
+        {
+            [defaults setInteger:1 forKey:@"currentlang"];
+        }
+        
         [defaults setBool:NO forKey:@"colorblindmode"];
         [defaults synchronize];
         [self startupdating];

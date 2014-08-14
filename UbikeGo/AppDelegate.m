@@ -13,6 +13,11 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     [MagicalRecord setupCoreDataStackWithStoreNamed:@"BikeModel"];
+    
+    NSString * language = [[NSLocale preferredLanguages] objectAtIndex:0];
+    NSLog(@"LANG:%@", language);
+    //zh-Hant
+    //en
     return YES;
 }
 							

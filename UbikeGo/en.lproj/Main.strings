@@ -1,0 +1,99 @@
+
+/* Class = "IBUILabel"; text = "正常模式"; ObjectID = "1ka-jl-QJW"; */
+"1ka-jl-QJW.text" = "Normal Colors";
+
+/* Class = "IBUILabel"; text = "追蹤"; ObjectID = "38Q-TR-rCF"; */
+"38Q-TR-rCF.text" = "Follow";
+
+/* Class = "IBUILabel"; text = "10"; ObjectID = "3zl-6f-Uuv"; */
+"3zl-6f-Uuv.text" = "10";
+
+/* Class = "IBUILabel"; text = "單車:5 | 車位:25"; ObjectID = "72r-7g-BJk"; */
+"72r-7g-BJk.text" = "單車:5 | 車位:25";
+
+/* Class = "IBUILabel"; text = "App開發, 後台建置, 與各式資訊系統規劃. 我們以資訊業多年的經驗和國內外最優秀的工程團隊提供客戶最迅速的服務與可靠的品質."; ObjectID = "7eU-2A-BNe"; */
+"7eU-2A-BNe.text" = "We bring years of experience in helping our clients both in Taiwan and abroad. Contact us for mobile development, backend services, and other IT projects!";
+
+/* Class = "IBUILabel"; text = "21"; ObjectID = "7rh-nc-rTb"; */
+"7rh-nc-rTb.text" = "21";
+
+/* Class = "IBUILabel"; text = "語言"; ObjectID = "98V-Db-4WF"; */
+"98V-Db-4WF.text" = "Language";
+
+/* Class = "IBUILabel"; text = "評價"; ObjectID = "HYd-8v-vtG"; */
+"HYd-8v-vtG.text" = "Rate";
+
+/* Class = "IBUILabel"; text = "臺北天氣"; ObjectID = "JTM-gU-6Q2"; */
+"JTM-gU-6Q2.text" = "Taipei Weather";
+
+/* Class = "IBUILabel"; text = "5分鐘"; ObjectID = "JnX-eh-sv8"; */
+"JnX-eh-sv8.text" = "5分鐘";
+
+/* Class = "IBUIButton"; normalTitle = "F"; ObjectID = "L3i-dE-cMY"; */
+"L3i-dE-cMY.normalTitle" = "F";
+
+/* Class = "IBUILabel"; text = "站點資訊更新中"; ObjectID = "LFo-n0-QUl"; */
+"LFo-n0-QUl.text" = "Updating station listing";
+
+/* Class = "IBUILabel"; text = "中文"; ObjectID = "QIZ-jB-8CH"; */
+"QIZ-jB-8CH.text" = "中文";
+
+/* Class = "IBUILabel"; text = "Name"; ObjectID = "Rc1-PG-92e"; */
+"Rc1-PG-92e.text" = "Name";
+
+/* Class = "IBUILabel"; text = "敬請期待!"; ObjectID = "S1v-lX-lCe"; */
+"S1v-lX-lCe.text" = "敬請期待!";
+
+/* Class = "IBUILabel"; text = "服務條款"; ObjectID = "Tgk-qg-kou"; */
+"Tgk-qg-kou.text" = "Terms";
+
+/* Class = "IBUILabel"; text = "附近站點"; ObjectID = "UWz-z3-Uwx"; */
+"UWz-z3-Uwx.text" = "Nearby";
+
+/* Class = "IBUILabel"; text = "單車"; ObjectID = "YCI-KH-iMc"; */
+"YCI-KH-iMc.text" = "Bikes";
+
+/* Class = "IBUIButton"; normalTitle = "開"; ObjectID = "ZoU-yu-FsI"; */
+"ZoU-yu-FsI.normalTitle" = "On";
+
+/* Class = "IBUILabel"; text = "單車"; ObjectID = "aq8-ob-kPL"; */
+"aq8-ob-kPL.text" = "Bikes";
+
+/* Class = "IBUIButton"; normalTitle = "English"; ObjectID = "bYc-Py-uop"; */
+"bYc-Py-uop.normalTitle" = "English";
+
+/* Class = "IBUILabel"; text = "單車: 10 | 車位: 20"; ObjectID = "dLz-a2-OTr"; */
+"dLz-a2-OTr.text" = "單車: 10 | 車位: 20";
+
+/* Class = "IBUILabel"; text = "100公尺"; ObjectID = "equ-Da-Pi2"; */
+"equ-Da-Pi2.text" = "100公尺";
+
+/* Class = "IBUILabel"; text = "聯絡我們"; ObjectID = "iO7-Pu-mnc"; */
+"iO7-Pu-mnc.text" = "Contact";
+
+/* Class = "IBUILabel"; text = "10"; ObjectID = "iSH-Zu-LZe"; */
+"iSH-Zu-LZe.text" = "10";
+
+/* Class = "IBUILabel"; text = "Coming Soon!"; ObjectID = "l1v-TS-ak0"; */
+"l1v-TS-ak0.text" = "Coming Soon!";
+
+/* Class = "IBUILabel"; text = "天氣"; ObjectID = "lMJ-yJ-yDd"; */
+"lMJ-yJ-yDd.text" = "Weather";
+
+/* Class = "IBUILabel"; text = "Area"; ObjectID = "lsl-bN-aSq"; */
+"lsl-bN-aSq.text" = "Area";
+
+/* Class = "IBUILabel"; text = "色盲辨識輔助"; ObjectID = "luh-5z-P16"; */
+"luh-5z-P16.text" = "Colorblind Mode";
+
+/* Class = "IBUILabel"; text = "名稱"; ObjectID = "mlA-6L-dP8"; */
+"mlA-6L-dP8.text" = "Name";
+
+/* Class = "IBUILabel"; text = "私房行程"; ObjectID = "raQ-6u-Sxo"; */
+"raQ-6u-Sxo.text" = "Trips";
+
+/* Class = "IBUILabel"; text = "21"; ObjectID = "voz-dz-Ji8"; */
+"voz-dz-Ji8.text" = "21";
+
+/* Class = "IBUILabel"; text = "某某區/某路口"; ObjectID = "wxy-ZO-ERy"; */
+"wxy-ZO-ERy.text" = "某某區/某路口";

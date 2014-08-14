@@ -61,10 +61,11 @@
 		B48C0D6E199A16B5004E1238 /* cb_parking_green@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B48C0D6B199A16B5004E1238 /* cb_parking_green@2x.png */; };
 		B48C0D6F199A16B5004E1238 /* cb_parking_red@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B48C0D6C199A16B5004E1238 /* cb_parking_red@2x.png */; };
 		B48C0D70199A16B5004E1238 /* cb_parking_yellow@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B48C0D6D199A16B5004E1238 /* cb_parking_yellow@2x.png */; };
+		B48C0D76199B5C59004E1238 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B48C0D78199B5C59004E1238 /* Localizable.strings */; };
+		B48C0D7D199B5FC6004E1238 /* Language.m in Sources */ = {isa = PBXBuildFile; fileRef = B48C0D7C199B5FC6004E1238 /* Language.m */; };
 		B48F51E5196428C900A0DA9E /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B48F51E4196428C900A0DA9E /* Foundation.framework */; };
 		B48F51E7196428C900A0DA9E /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B48F51E6196428C900A0DA9E /* CoreGraphics.framework */; };
 		B48F51E9196428C900A0DA9E /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B48F51E8196428C900A0DA9E /* UIKit.framework */; };
-		B48F51EF196428C900A0DA9E /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = B48F51ED196428C900A0DA9E /* InfoPlist.strings */; };
 		B48F51F1196428C900A0DA9E /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = B48F51F0196428C900A0DA9E /* main.m */; };
 		B48F51F5196428C900A0DA9E /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = B48F51F4196428C900A0DA9E /* AppDelegate.m */; };
 		B48F51F8196428C900A0DA9E /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B48F51F6196428C900A0DA9E /* Main.storyboard */; };
@@ -73,7 +74,6 @@
 		B48F5204196428C900A0DA9E /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B48F5203196428C900A0DA9E /* XCTest.framework */; };
 		B48F5205196428C900A0DA9E /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B48F51E4196428C900A0DA9E /* Foundation.framework */; };
 		B48F5206196428C900A0DA9E /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B48F51E8196428C900A0DA9E /* UIKit.framework */; };
-		B48F520E196428C900A0DA9E /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = B48F520C196428C900A0DA9E /* InfoPlist.strings */; };
 		B48F5210196428C900A0DA9E /* UbikeGoTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B48F520F196428C900A0DA9E /* UbikeGoTests.m */; };
 		B48F521A196428E800A0DA9E /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B48F5219196428E800A0DA9E /* MapKit.framework */; };
 		B48F521D19652DD000A0DA9E /* BikeModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = B48F521B19652DD000A0DA9E /* BikeModel.xcdatamodeld */; };
@@ -177,12 +177,18 @@
 		B48C0D6B199A16B5004E1238 /* cb_parking_green@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cb_parking_green@2x.png"; sourceTree = "<group>"; };
 		B48C0D6C199A16B5004E1238 /* cb_parking_red@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cb_parking_red@2x.png"; sourceTree = "<group>"; };
 		B48C0D6D199A16B5004E1238 /* cb_parking_yellow@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cb_parking_yellow@2x.png"; sourceTree = "<group>"; };
+		B48C0D71199B33CE004E1238 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Main.strings; sourceTree = "<group>"; };
+		B48C0D75199B51B7004E1238 /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/Main.strings"; sourceTree = "<group>"; };
+		B48C0D77199B5C59004E1238 /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/Localizable.strings"; sourceTree = "<group>"; };
+		B48C0D79199B5C62004E1238 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
+		B48C0D7A199B5DDE004E1238 /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = Base; path = Base.lproj/Localizable.strings; sourceTree = "<group>"; };
+		B48C0D7B199B5FC6004E1238 /* Language.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Language.h; sourceTree = "<group>"; };
+		B48C0D7C199B5FC6004E1238 /* Language.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Language.m; sourceTree = "<group>"; };
 		B48F51E1196428C900A0DA9E /* UbikeGo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = UbikeGo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B48F51E4196428C900A0DA9E /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		B48F51E6196428C900A0DA9E /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		B48F51E8196428C900A0DA9E /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		B48F51EC196428C900A0DA9E /* UbikeGo-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "UbikeGo-Info.plist"; sourceTree = "<group>"; };
-		B48F51EE196428C900A0DA9E /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		B48F51F0196428C900A0DA9E /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		B48F51F2196428C900A0DA9E /* UbikeGo-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UbikeGo-Prefix.pch"; sourceTree = "<group>"; };
 		B48F51F3196428C900A0DA9E /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -194,7 +200,6 @@
 		B48F5202196428C900A0DA9E /* UbikeGoTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = UbikeGoTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		B48F5203196428C900A0DA9E /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 		B48F520B196428C900A0DA9E /* UbikeGoTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "UbikeGoTests-Info.plist"; sourceTree = "<group>"; };
-		B48F520D196428C900A0DA9E /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		B48F520F196428C900A0DA9E /* UbikeGoTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UbikeGoTests.m; sourceTree = "<group>"; };
 		B48F5219196428E800A0DA9E /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 		B48F521C19652DD000A0DA9E /* BikeModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = BikeModel.xcdatamodel; sourceTree = "<group>"; };
@@ -307,9 +312,12 @@
 		B48F51EA196428C900A0DA9E /* UbikeGo */ = {
 			isa = PBXGroup;
 			children = (
+				B48C0D78199B5C59004E1238 /* Localizable.strings */,
 				B48F51F3196428C900A0DA9E /* AppDelegate.h */,
 				B48F51F4196428C900A0DA9E /* AppDelegate.m */,
 				B48F51F6196428C900A0DA9E /* Main.storyboard */,
+				B48C0D7B199B5FC6004E1238 /* Language.h */,
+				B48C0D7C199B5FC6004E1238 /* Language.m */,
 				B48F521B19652DD000A0DA9E /* BikeModel.xcdatamodeld */,
 				B48F52C61966B3A200A0DA9E /* InitialSetupViewController.h */,
 				B48F52C71966B3A200A0DA9E /* InitialSetupViewController.m */,
@@ -335,7 +343,6 @@
 			isa = PBXGroup;
 			children = (
 				B48F51EC196428C900A0DA9E /* UbikeGo-Info.plist */,
-				B48F51ED196428C900A0DA9E /* InfoPlist.strings */,
 				B48F51F0196428C900A0DA9E /* main.m */,
 				B48F51F2196428C900A0DA9E /* UbikeGo-Prefix.pch */,
 			);
@@ -355,7 +362,6 @@
 			isa = PBXGroup;
 			children = (
 				B48F520B196428C900A0DA9E /* UbikeGoTests-Info.plist */,
-				B48F520C196428C900A0DA9E /* InfoPlist.strings */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -533,7 +539,6 @@
 				B476F8A31998AA64001348E5 /* 04d@2x.png in Resources */,
 				B476F8BD1998EB52001348E5 /* green@2x.png in Resources */,
 				B48C0D52199A041B004E1238 /* cb_greenfull@2x.png in Resources */,
-				B48F51EF196428C900A0DA9E /* InfoPlist.strings in Resources */,
 				B476F8A81998AA64001348E5 /* 10n@2x.png in Resources */,
 				B48C0D4F199A041B004E1238 /* cb_green_sel@2x.png in Resources */,
 				B476F8A71998AA64001348E5 /* 10d@2x.png in Resources */,
@@ -553,6 +558,7 @@
 				B476F8B11998C94C001348E5 /* routelist_icon@2x.png in Resources */,
 				B476F8891998A5CA001348E5 /* lang_en@2x.png in Resources */,
 				B476F8A61998AA64001348E5 /* 09n@2x.png in Resources */,
+				B48C0D76199B5C59004E1238 /* Localizable.strings in Resources */,
 				B476F8AD1998AA64001348E5 /* 50d@2x.png in Resources */,
 				B46D3EF3196BEF470011DF2F /* smallmenu@2x.png in Resources */,
 				B48F52CA1966B51100A0DA9E /* update@2x.png in Resources */,
@@ -612,7 +618,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B48F520E196428C900A0DA9E /* InfoPlist.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -665,6 +670,7 @@
 				B48F521D19652DD000A0DA9E /* BikeModel.xcdatamodeld in Sources */,
 				B48F52D4196AA82C00A0DA9E /* Station.m in Sources */,
 				B48F51F1196428C900A0DA9E /* main.m in Sources */,
+				B48C0D7D199B5FC6004E1238 /* Language.m in Sources */,
 				B48F52271965367600A0DA9E /* ISO8601DateFormatter.m in Sources */,
 				B48F526D196551A800A0DA9E /* MapStation.m in Sources */,
 			);
@@ -689,28 +695,24 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
-		B48F51ED196428C900A0DA9E /* InfoPlist.strings */ = {
+		B48C0D78199B5C59004E1238 /* Localizable.strings */ = {
 			isa = PBXVariantGroup;
 			children = (
-				B48F51EE196428C900A0DA9E /* en */,
+				B48C0D77199B5C59004E1238 /* zh-Hant */,
+				B48C0D79199B5C62004E1238 /* en */,
+				B48C0D7A199B5DDE004E1238 /* Base */,
 			);
-			name = InfoPlist.strings;
+			name = Localizable.strings;
 			sourceTree = "<group>";
 		};
 		B48F51F6196428C900A0DA9E /* Main.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
 				B48F51F7196428C900A0DA9E /* Base */,
+				B48C0D71199B33CE004E1238 /* en */,
+				B48C0D75199B51B7004E1238 /* zh-Hant */,
 			);
 			name = Main.storyboard;
-			sourceTree = "<group>";
-		};
-		B48F520C196428C900A0DA9E /* InfoPlist.strings */ = {
-			isa = PBXVariantGroup;
-			children = (
-				B48F520D196428C900A0DA9E /* en */,
-			);
-			name = InfoPlist.strings;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */
