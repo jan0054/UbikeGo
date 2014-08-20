@@ -1,6 +1,6 @@
 # SZTextView 
 
-[![Build Status](https://travis-ci.org/glaszig/SZTextView.png?branch=master)](https://travis-ci.org/glaszig/SZTextView)
+[![Build Status](https://travis-ci.org/glaszig/SZTextView.svg?branch=master)](https://travis-ci.org/glaszig/SZTextView)
 [![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/glaszig/sztextview/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
 
 A drop-in UITextView replacement which gives you: a placeholder.  
@@ -8,25 +8,44 @@ Technically it differs from other solutions in that it tries to work like UIText
 
 ## Requirements
 
-Your iOS project. (Tested on iOS versions 5.0, 6.1 and 7.0)
+Your iOS project. (Tested on iOS versions 5.0, 6.1, 7.0 and 7.1)
 
-> **Note**: This is ARC-enabled code. You'll need Xcode 4.2 and OS X 10.6, at least.
+> **Note**: This is ARC-enabled code. You'll need Xcode 4.2 and OS X 10.6, at least.  
+> **Note**: To run the tests you'll need Xcode 5 with XCTest.
 
 ## Installation
 
-The easiest way would be to clone this repo and add the project to your Xcode workspace.  
-Or use [CocoaPods](http://cocoapods.org).
+Either clone this repo and add the project to your Xcode workspace or use [CocoaPods](http://cocoapods.org).
 
 ## Usage
 
 ```objc
 SZTextView *textView = [SZTextView new];
-self.textView.placeholder = @"Enter lorem ipsum here";
-self.textView.placeholderTextColor = [UIColor lightGrayColor];
-self.textView.font = [UIFont fontWithName:@"HelveticaNeue-Light" size:18.0];
+textView.placeholder = @"Enter lorem ipsum here";
+textView.placeholderTextColor = [UIColor lightGrayColor];
+textView.font = [UIFont fontWithName:@"HelveticaNeue-Light" size:18.0];
 ```
 
-A simple demo is included.
+Analogously you can use the `attributedPlaceholder` property to set a fancy `NSAttributedString` as the placeholder:
+
+```objc
+NSMutableAttributedString *placeholder = [[NSMutableAttributedString alloc] initWithString:@"Enter lorem ipsum here"];
+[placeholder addAttribute:NSForegroundColorAttributeName value:[UIColor redColor] range:NSMakeRange(0,2)];
+[placeholder addAttribute:NSForegroundColorAttributeName value:[UIColor greenColor] range:NSMakeRange(2,4)];
+[placeholder addAttribute:NSForegroundColorAttributeName value:[UIColor blueColor] range:NSMakeRange(6,4)];
+
+textView.attributedPlaceholder = placeholder;
+```
+
+Both properties `placeholder` and `attributedPlaceholder` are made to stay in sync.
+If you set an `attributedPlaceholder` and afterwards set `placeholder` to something else, the set text gets copied to the `attributedPlaceholder` while trying to keep the original text attributes.  
+Also, `placeholder` will be set to `attributedPlaceholder.string` when using the `attributedPlaceholder` setter.
+
+A simple demo and a few unit tests are included.
+
+### User Defined Runtime Attributes
+
+If you prefer using Interface Builder to configure your UI, you can use UDRA's to set values for `placeholder` and `placeholderTextColor`.
 
 ## Contributing
 

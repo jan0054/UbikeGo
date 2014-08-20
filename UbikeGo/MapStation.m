@@ -22,7 +22,7 @@
 @synthesize sid;
 @synthesize stationCord;
 
-- (id)initWithName:(NSString*)sname nameen:(NSString *)snameen area:(NSString*)sarea areaen:(NSString*)sareaen district:(NSString*)sdistrict districten:(NSString*) sdistricten total:(int)stotal currentbikes:(int)scurrentbikes emptyslots:(int)semptyslots coordinate:(CLLocationCoordinate2D)coordinate {
+- (id)initWithName:(NSString*)sname nameen:(NSString *)snameen area:(NSString*)sarea areaen:(NSString*)sareaen district:(NSString*)sdistrict districten:(NSString*) sdistricten total:(int)stotal currentbikes:(int)scurrentbikes emptyslots:(int)semptyslots coordinate:(CLLocationCoordinate2D)coordinate sid:(NSNumber *) stationid {
     if ((self = [super init])) {
         if ([sname isKindOfClass:[NSString class]]) {
             self.name = sname;
@@ -38,6 +38,7 @@
         self.areaen = sareaen;
         self.nameen = snameen;
         self.districten = sdistricten;
+        self.sid = stationid;
     }
     return self;
 }

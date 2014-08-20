@@ -15,7 +15,9 @@
 #import "MapStation.h"
 #import "NearbyStationCellTableViewCell.h"
 #import "RKWeather.h"
-
+#import "TripTableViewCell.h"
+#import <Parse/Parse.h>
+#import "TripViewController.h"
 
 #define IS_IPHONE_5 ( fabs( ( double )[ [ UIScreen mainScreen ] bounds ].size.height - ( double )568 ) < DBL_EPSILON )
 
@@ -27,6 +29,8 @@
 MKRoute *routeDetails;
 CLLocationCoordinate2D selected_station_cord;
 bool nearybylistishidden;
+NSString *selected_tripobj_id;
+
 
 @synthesize fullstationdict;
 @synthesize nearbystationarray;
@@ -42,6 +46,18 @@ bool nearybylistishidden;
 @synthesize fullgreen_sel;
 @synthesize yellow_sel;
 @synthesize red_sel;
+@synthesize trip_list_array;
+@synthesize selected_trip;
+@synthesize selected_pois;
+@synthesize trip_name;
+@synthesize trip_name_en;
+@synthesize trip_description;
+@synthesize trip_description_en;
+@synthesize trip_duration;
+@synthesize trip_duration_en;
+@synthesize start_station;
+@synthesize end_station;
+@synthesize tripheader;
 
 - (void)viewDidLoad
 {
@@ -122,6 +138,8 @@ bool nearybylistishidden;
     self.menubar.translucent=YES;
     self.menubar.layer.cornerRadius=3;
     
+    [self setup_shadows];
+    
     [self setup_annotaion_image_mode];
     [self setupNearbyListAtLocation:self.mainmap.userLocation.coordinate];
 
@@ -133,8 +151,42 @@ bool nearybylistishidden;
     [pullrefresh addTarget:self action:@selector(refreshctrl:) forControlEvents:UIControlEventValueChanged];
     [self.nearby_list_table addSubview:pullrefresh];
     
-    [self getweatheronline];
     
+    
+    //self.trip_list_array = [[NSArray alloc] init];
+}
+
+- (void) viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:YES];
+    [self setup_annotaion_image_mode];
+    [self center_on_taipei_and_refresh];
+    [self setup_trip_list];
+    [self getweatheronline];
+}
+
+//ui layout
+- (void) viewDidLayoutSubviews
+{
+    //initial start: hide the top menu and the bottom nearby station list
+    self.nearby_list_view.frame = CGRectMake(0, 566, 320, 200);
+    self.setting_view.frame = CGRectMake(0, 566, 320, 200);
+    self.inapplogoview.frame = CGRectMake(0, 566, 320, 200);
+    self.infobar.frame= CGRectMake(0, -90, 320, 90);
+    self.menubar.frame= CGRectMake(0, -90, 320, 90);
+    if( IS_IPHONE_5 )
+    {}
+    else
+    {
+        //special layout for 3.5 inch screen
+        self.refresh_outlet.frame = CGRectMake(20, 404, 44, 44);
+        self.smallmenu_outlet.frame = CGRectMake(138, 404, 44, 44);
+        self.center_outlet.frame = CGRectMake(256, 404, 44, 44);
+    }
+}
+
+- (void) setup_shadows
+{
     //Shadows
     UIBezierPath *shadowPath = [UIBezierPath bezierPathWithRect:self.menubar.bounds];
     self.menubar.layer.masksToBounds = NO;
@@ -163,48 +215,20 @@ bool nearybylistishidden;
     self.setting_view.layer.shadowOffset = CGSizeMake(0.0f, -1.0f);
     self.setting_view.layer.shadowOpacity = 0.2f;
     self.setting_view.layer.shadowPath = shadowPathfour.CGPath;
-
+    
     UIBezierPath *shadowPathfive = [UIBezierPath bezierPathWithRect:self.inapplogoview.bounds];
     self.inapplogoview.layer.masksToBounds = NO;
     self.inapplogoview.layer.shadowColor = [UIColor blackColor].CGColor;
     self.inapplogoview.layer.shadowOffset = CGSizeMake(0.0f, -1.0f);
     self.inapplogoview.layer.shadowOpacity = 0.2f;
     self.inapplogoview.layer.shadowPath = shadowPathfive.CGPath;
-
+    
     UIBezierPath *shadowPathsix = [UIBezierPath bezierPathWithRect:self.separator_line.bounds];
     self.separator_line.layer.masksToBounds = NO;
     self.separator_line.layer.shadowColor = [UIColor whiteColor].CGColor;
     self.separator_line.layer.shadowOffset = CGSizeMake(1.0f, 0.0f);
     self.separator_line.layer.shadowOpacity = 1.0f;
     self.separator_line.layer.shadowPath = shadowPathsix.CGPath;
-    
-}
-
-- (void) viewDidAppear:(BOOL)animated
-{
-    [super viewDidAppear:YES];
-    [self setup_annotaion_image_mode];
-    [self center_on_taipei_and_refresh];
-}
-
-//ui layout
-- (void) viewDidLayoutSubviews
-{
-    //initial start: hide the top menu and the bottom nearby station list
-    self.nearby_list_view.frame = CGRectMake(0, 566, 320, 200);
-    self.setting_view.frame = CGRectMake(0, 566, 320, 200);
-    self.inapplogoview.frame = CGRectMake(0, 566, 320, 200);
-    self.infobar.frame= CGRectMake(0, -90, 320, 90);
-    self.menubar.frame= CGRectMake(0, -90, 320, 90);
-    if( IS_IPHONE_5 )
-    {}
-    else
-    {
-        //special layout for 3.5 inch screen
-        self.refresh_outlet.frame = CGRectMake(20, 404, 44, 44);
-        self.smallmenu_outlet.frame = CGRectMake(138, 404, 44, 44);
-        self.center_outlet.frame = CGRectMake(256, 404, 44, 44);
-    }
 }
 
 //calculate color of the number label according to bike number
@@ -429,7 +453,7 @@ didUpdateUserLocation:
         CLLocationCoordinate2D coordinate;
         coordinate.latitude = latdbl;
         coordinate.longitude = londbl;
-        MapStation *annotation = [[MapStation alloc] initWithName:station.name_ch nameen:station.name_en area:station.description_ch areaen:station.description_en district:station.district_ch districten:station.district_en total:total currentbikes:current emptyslots:empty coordinate:coordinate];
+        MapStation *annotation = [[MapStation alloc] initWithName:station.name_ch nameen:station.name_en area:station.description_ch areaen:station.description_en district:station.district_ch districten:station.district_en total:total currentbikes:current emptyslots:empty coordinate:coordinate sid: station.sid];
         [self.mainmap addAnnotation:annotation];
     }
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
@@ -608,6 +632,7 @@ didUpdateUserLocation:
             self.infobar.frame= CGRectMake(0, 0, 320, 90);
         }];
         [self routeUserToDestination:selected_station_cord withoverlay:NO];
+        NSLog(@"ID:%@", somemapstation.sid);
     }
 }
 
@@ -786,11 +811,52 @@ didUpdateUserLocation:
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
+    if (tableView.tag==2)
+    {
+        return [self.trip_list_array count];
+    }
     return self.nearbystationarray.count;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    if (tableView.tag==2)
+    {
+        TripTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"tripcell"];
+        PFObject *tripobj = [self.trip_list_array objectAtIndex:indexPath.row];
+        NSArray *poiarray = tripobj[@"pois"];
+        
+        switch (self.currentlang) {
+            case 0:
+                cell.trip_name.text = tripobj[@"name"];
+                cell.trip_duration.text = tripobj[@"duration"];
+                cell.num_of_pois.text = [NSString stringWithFormat:@"%d個景點",[poiarray count]];
+                break;
+                
+            case 1:
+                cell.trip_name.text = tripobj[@"name_en"];
+                cell.trip_duration.text = tripobj[@"duration_en"];
+                cell.num_of_pois.text = [NSString stringWithFormat:@"%d scenic points",[poiarray count]];
+                break;
+                
+            default:
+                cell.trip_name.text = tripobj[@"name_en"];
+                cell.trip_duration.text = tripobj[@"duration_en"];
+                cell.num_of_pois.text = [NSString stringWithFormat:@"%d scenic points",[poiarray count]];
+            break;
+                
+        }
+        
+        PFFile *tripimage = tripobj[@"image"];
+        [tripimage getDataInBackgroundWithBlock:^(NSData *imageData, NSError *error) {
+            if (!error) {
+                cell.trip_image.image = [UIImage imageWithData:imageData];
+            }
+        }];
+        
+        return cell;
+    }
+    
     Station *station = [self.nearbystationarray objectAtIndex:indexPath.row];
     NearbyStationCellTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"nearbystationcell"];
     
@@ -843,18 +909,60 @@ didUpdateUserLocation:
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    [self.mainmap removeOverlays:self.mainmap.overlays];
-    Station *station = [self.nearbystationarray objectAtIndex:indexPath.row];
-    CLLocationCoordinate2D stationcord;
-    stationcord.latitude = [station.lat doubleValue];
-    stationcord.longitude = [station.lon doubleValue];
-    MKUserLocation *stationlocation = [[MKUserLocation alloc] init];
-    stationlocation.coordinate = stationcord;
-    MKCoordinateRegion region =
-    MKCoordinateRegionMakeWithDistance (
-                                        stationlocation.coordinate, 750, 750);
-    [self.mainmap setRegion:region animated:YES];
-    [self routeUserToDestination:stationcord withoverlay:YES];
+    if (tableView.tag==2)
+    {
+        //selected a trip
+        
+        PFObject *trip = [self.trip_list_array objectAtIndex:indexPath.row];
+        selected_tripobj_id = trip.objectId;
+        self.selected_trip = trip;
+        self.selected_pois = [[NSArray alloc] initWithArray: trip[@"pois"]];
+        
+        //get all the details on this trip
+        PFQuery *tripquery = [PFQuery queryWithClassName:@"trip"];
+        [tripquery getObjectInBackgroundWithId:selected_tripobj_id block:^(PFObject *object, NSError *error) {
+            
+            self.trip_name = object[@"name"];
+            self.trip_name_en = object[@"name_en"];
+            self.trip_description = object[@"description"];
+            self.trip_description_en = object[@"description_en"];
+            self.trip_duration = object[@"duration"];
+            self.trip_duration_en = object[@"duration_en"];
+            
+            NSString *startstr = object[@"start_station"];
+            NSString *endstr = object[@"end_station"];
+            NSNumberFormatter * f = [[NSNumberFormatter alloc] init];
+            [f setNumberStyle:NSNumberFormatterDecimalStyle];
+            self.start_station = [f numberFromString:startstr];
+            self.end_station = [f numberFromString:endstr];
+            
+            PFFile *tripimage = object[@"image"];
+            [tripimage getDataInBackgroundWithBlock:^(NSData *imageData, NSError *error) {
+                if (!error) {
+                    self.tripheader = [UIImage imageWithData:imageData];
+                    [self performSegueWithIdentifier:@"choosetripsegue" sender:self];
+                }
+            }];
+
+        }];
+        
+    }
+    else
+    {
+        [self.mainmap removeOverlays:self.mainmap.overlays];
+        Station *station = [self.nearbystationarray objectAtIndex:indexPath.row];
+        CLLocationCoordinate2D stationcord;
+        stationcord.latitude = [station.lat doubleValue];
+        stationcord.longitude = [station.lon doubleValue];
+        MKUserLocation *stationlocation = [[MKUserLocation alloc] init];
+        stationlocation.coordinate = stationcord;
+        MKCoordinateRegion region =
+        MKCoordinateRegionMakeWithDistance (
+                                            stationlocation.coordinate, 750, 750);
+        [self.mainmap setRegion:region animated:YES];
+        [self routeUserToDestination:stationcord withoverlay:YES];
+
+    }
 }
 
 
@@ -1131,6 +1239,134 @@ didUpdateUserLocation:
     [[UIApplication sharedApplication] openURL:[NSURL URLWithString:str]];
 }
 
+- (void) upload_poi
+{
+    NSLog(@"poi upload");
+    PFObject *poi = [PFObject objectWithClassName:@"poi"];
+    poi[@"name"] = @"臺北車站";
+    poi[@"name_en"] = @"Taipei main station";
+    poi[@"author"] = @"CSJ";
+    poi[@"author_en"] = @"CSJ";
+    poi[@"description"] = @"台北車站有很多車, 但你的車停這邊要花很多錢";
+    poi[@"description_en"] = @"Taipei main station is the main station in Taipei. Now say it really fast twice.";
+    poi[@"phone"] = @"0975087264";
+    poi[@"address"] = @"大安區金華街522號";
+    poi[@"link"] = @"http://tapgo.cc";
+    PFGeoPoint *location = [PFGeoPoint geoPointWithLatitude:25.04764 longitude:121.51723];
+    poi[@"location"] = location;
+    
+    UIImage *image1 = [UIImage imageNamed:@"tpe_gov"];
+    UIImage *image2 = [UIImage imageNamed:@"tpe_101"];
+    UIImage *image3 = [UIImage imageNamed:@"tpe_station"];
+    
+    NSData *imageData1 = UIImagePNGRepresentation(image1);
+    NSData *imageData2 = UIImagePNGRepresentation(image2);
+    NSData *imageData3 = UIImagePNGRepresentation(image3);
+    
+    PFFile *imageFile1 = [PFFile fileWithName:@"tpe_gov.png" data:imageData1];
+    PFFile *imageFile2 = [PFFile fileWithName:@"tpe_101.png" data:imageData2];
+    PFFile *imageFile3 = [PFFile fileWithName:@"tpe_station.png" data:imageData3];
+    
+    poi[@"image"] = imageFile3;
+    
+    [poi saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+        if (succeeded) {
+            NSLog(@"poi post success");
+        } else {
+            NSLog(@"poi post error: %@", error);
+        }
+    }];
+
+}
+
+- (void) upload_trip
+{
+    NSLog(@"upload trip");
+    PFObject *trip = [PFObject objectWithoutDataWithClassName:@"trip" objectId:@"tNrMRfYG02"];
+    PFObject *poi1 = [PFObject objectWithoutDataWithClassName:@"poi" objectId:@"rwpfOOTpk2"];
+    PFObject *poi2 = [PFObject objectWithoutDataWithClassName:@"poi" objectId:@"5fnFzcOEje"];
+    PFObject *poi3 = [PFObject objectWithoutDataWithClassName:@"poi" objectId:@"1XFjkwHpo6"];
+    NSArray *poiarray = [[NSArray alloc] initWithObjects:poi2, poi3, poi1, nil];
+    trip[@"pois"] = poiarray;
+    [trip saveInBackground];
+    /*
+    //PFObject *trip = [PFObject objectWithoutDataWithClassName:@"trip" objectId:@"tNrMRfYG02"];
+    //PFObject *trip = [PFObject objectWithoutDataWithClassName:@"trip" objectId:@"9TjQmlkvQW"];
+    PFObject *trip = [PFObject objectWithoutDataWithClassName:@"trip" objectId:@"h0zk2WB3nx"];
+    PFObject *poi3 = [PFObject objectWithoutDataWithClassName:@"poi" objectId:@"1XFjkwHpo6"];
+    PFObject *poi2 = [PFObject objectWithoutDataWithClassName:@"poi" objectId:@"5fnFzcOEje"];
+    PFObject *poi1 = [PFObject objectWithoutDataWithClassName:@"poi" objectId:@"rwpfOOTpk2"];
+    PFRelation *trip_poi_relation = [trip relationForKey:@"poisintrip"];
+    [trip_poi_relation addObject:poi1];
+    [trip_poi_relation addObject:poi2];
+    [trip_poi_relation addObject:poi3];
+    [trip saveInBackground];
+     */
+    /*
+    PFObject *trip = [PFObject objectWithClassName:@"trip"];
+    trip[@"name"] = @"東區快樂遊";
+    trip[@"name_en"] = @"Taipei for the rich and powerful";
+    trip[@"author"] = @"CSJ";
+    trip[@"author_en"] = @"CSJ";
+    trip[@"description"] = @"來東區騎個車, 見識下天龍人的生活吧!";
+    trip[@"description_en"] = @"Check out eastern Taipei, where the rich and powerful live their lives of luxury.";
+    trip[@"duration"] = @"1~2個小時";
+    trip[@"duration_en"] = @"1~2 hours";
+    PFObject *poi1 = [PFObject objectWithoutDataWithClassName:@"poi" objectId:@"rwpfOOTpk2"];
+    PFObject *poi2 = [PFObject objectWithoutDataWithClassName:@"poi" objectId:@"5fnFzcOEje"];
+    PFObject *poi3 = [PFObject objectWithoutDataWithClassName:@"poi" objectId:@"1XFjkwHpo6"];
+    NSArray *poiarray = [[NSArray alloc] initWithObjects:poi1, poi2, poi3, nil];
+    trip[@"pois"] = poiarray;
+    
+    UIImage *image1 = [UIImage imageNamed:@"east_tpe"];
+    NSData *imageData1 = UIImagePNGRepresentation(image1);
+    PFFile *imageFile1 = [PFFile fileWithName:@"east_tpe.png" data:imageData1];
+    trip[@"image"] = imageFile1;
+    
+    [trip saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+        if (succeeded) {
+            NSLog(@"trip post success");
+        } else {
+            NSLog(@"trip post error: %@", error);
+        }
+    }];
+    */
+}
 
 
+- (void) setup_trip_list
+{
+    PFQuery *tripquery = [PFQuery queryWithClassName:@"trip"];
+    //[tripquery orderByDescending:@"createdAt"];
+    [tripquery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+        if (!error) {
+            self.trip_list_array = [[NSArray alloc] initWithArray:objects];
+            [self.trip_table reloadData];
+        }
+    }];
+}
+
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+{
+    TripViewController *controller = [segue destinationViewController];
+    controller.tripobjid = selected_tripobj_id;
+    controller.fullstationdict = self.fullstationdict;
+    controller.tripobj = self.selected_trip;
+    controller.pois = self.selected_pois;
+    //trip details below
+    controller.trip_name = self.trip_name;
+    controller.trip_name_en = self.trip_name_en;
+    controller.trip_description = self.trip_description;
+    controller.trip_description_en = self.trip_description_en;
+    controller.trip_duration = self.trip_duration;
+    controller.trip_duration_en = self.trip_duration_en;
+    controller.start_station = self.start_station;
+    controller.end_station = self.end_station;
+    controller.tripheader = self.tripheader;
+}
+
+
+- (IBAction)testbutton:(UIButton *)sender {
+    [self upload_trip];
+}
 @end

@@ -10,7 +10,7 @@
 #import <MapKit/MapKit.h>
 #import <QuartzCore/QuartzCore.h>
 #import <CoreLocation/CoreLocation.h>
-
+#import <Parse/Parse.h>
 @class Language;
 
 @interface ViewController : UIViewController<MKMapViewDelegate>
@@ -78,6 +78,19 @@
 @property UIImage *parking_red;
 @property (strong, nonatomic) IBOutlet UILabel *parking_spot_label;
 @property (strong, nonatomic) IBOutlet UIImageView *parking_image;
-
+@property (strong, nonatomic) IBOutlet UITableView *trip_table;
+@property NSArray *trip_list_array;
+@property PFObject *selected_trip;
+@property NSArray *selected_pois;
+- (IBAction)testbutton:(UIButton *)sender;
+@property NSString *trip_name;
+@property NSString *trip_name_en;
+@property NSString *trip_description;
+@property NSString *trip_description_en;
+@property NSString *trip_duration;
+@property NSString *trip_duration_en;
+@property NSNumber *start_station;
+@property NSNumber *end_station;
+@property UIImage *tripheader;
 
 @end

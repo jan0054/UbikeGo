@@ -11,7 +11,7 @@
 
 @interface MapStation : NSObject<MKAnnotation>
 
-- (id)initWithName:(NSString*)sname nameen:(NSString *)snameen area:(NSString*)sarea areaen:(NSString*)sareaen district:(NSString*)sdistrict districten:(NSString*) sdistricten total:(int)stotal currentbikes:(int)scurrentbikes emptyslots:(int)semptyslots coordinate:(CLLocationCoordinate2D)coordinate;
+- (id)initWithName:(NSString*)sname nameen:(NSString *)snameen area:(NSString*)sarea areaen:(NSString*)sareaen district:(NSString*)sdistrict districten:(NSString*) sdistricten total:(int)stotal currentbikes:(int)scurrentbikes emptyslots:(int)semptyslots coordinate:(CLLocationCoordinate2D)coordinate sid:(NSNumber *) stationid;
 - (MKMapItem*)mapItem;
 
 @property (nonatomic, copy) NSString *name;

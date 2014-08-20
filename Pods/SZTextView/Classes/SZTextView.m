@@ -15,25 +15,38 @@
 @property (strong, nonatomic) UITextView *_placeholderTextView;
 @end
 
+static NSString * const kAttributedPlaceholderKey = @"attributedPlaceholder";
 static NSString * const kPlaceholderKey = @"placeholder";
 static NSString * const kFontKey = @"font";
+static NSString * const kAttributedTextKey = @"attributedText";
 static NSString * const kTextKey = @"text";
 static NSString * const kExclusionPathsKey = @"exclusionPaths";
+static NSString * const kLineFragmentPaddingKey = @"lineFragmentPadding";
 static NSString * const kTextContainerInsetKey = @"textContainerInset";
 
 @implementation SZTextView
+
+- (instancetype)initWithCoder:(NSCoder *)coder
+{
+    self = [super initWithCoder:coder];
+    if (self) {
+        [self preparePlaceholder];
+    }
+    return self;
+}
 
 - (id)initWithFrame:(CGRect)frame
 {
     self = [super initWithFrame:frame];
     if (self) {
-        [self awakeFromNib];
+        [self preparePlaceholder];
     }
     return self;
 }
 
-- (void)awakeFromNib
+- (void)preparePlaceholder
 {
+    NSAssert(!self._placeholderTextView, @"placeholder has been prepared already: %@", self._placeholderTextView);
     // the label which displays the placeholder
     // needs to inherit some properties from its parent text view
 
@@ -50,6 +63,8 @@ static NSString * const kTextContainerInsetKey = @"textContainerInset";
     self._placeholderTextView.userInteractionEnabled = NO;
     self._placeholderTextView.font = self.font;
     self._placeholderTextView.isAccessibilityElement = NO;
+    self._placeholderTextView.contentOffset = self.contentOffset;
+    self._placeholderTextView.contentInset = self.contentInset;
 
     if ([self._placeholderTextView respondsToSelector:@selector(setSelectable:)]) {
         self._placeholderTextView.selectable = NO;
@@ -57,25 +72,35 @@ static NSString * const kTextContainerInsetKey = @"textContainerInset";
 
     if (HAS_TEXT_CONTAINER) {
         self._placeholderTextView.textContainer.exclusionPaths = self.textContainer.exclusionPaths;
+        self._placeholderTextView.textContainer.lineFragmentPadding = self.textContainer.lineFragmentPadding;
     }
 
-    if (_placeholder) {
+    if (HAS_TEXT_CONTAINER_INSETS(self)) {
+        self._placeholderTextView.textContainerInset = self.textContainerInset;
+    }
+
+    if (_attributedPlaceholder) {
+        self._placeholderTextView.attributedText = _attributedPlaceholder;
+    } else if (_placeholder) {
         self._placeholderTextView.text = _placeholder;
     }
 
-    [self addSubview:self._placeholderTextView];
-    [self sendSubviewToBack:self._placeholderTextView];
+    [self setPlaceholderVisibleForText:self.text];
+
     self.clipsToBounds = YES;
 
     // some observations
-    NSNotificationCenter *defaultCenter;
-    defaultCenter = [NSNotificationCenter defaultCenter];
+    NSNotificationCenter *defaultCenter = [NSNotificationCenter defaultCenter];
     [defaultCenter addObserver:self selector:@selector(textDidChange:)
                           name:UITextViewTextDidChangeNotification object:self];
 
+    [self addObserver:self forKeyPath:kAttributedPlaceholderKey
+              options:NSKeyValueObservingOptionNew context:nil];
     [self addObserver:self forKeyPath:kPlaceholderKey
               options:NSKeyValueObservingOptionNew context:nil];
     [self addObserver:self forKeyPath:kFontKey
+              options:NSKeyValueObservingOptionNew context:nil];
+    [self addObserver:self forKeyPath:kAttributedTextKey
               options:NSKeyValueObservingOptionNew context:nil];
     [self addObserver:self forKeyPath:kTextKey
               options:NSKeyValueObservingOptionNew context:nil];
@@ -83,19 +108,40 @@ static NSString * const kTextContainerInsetKey = @"textContainerInset";
     if (HAS_TEXT_CONTAINER) {
         [self.textContainer addObserver:self forKeyPath:kExclusionPathsKey
                                 options:NSKeyValueObservingOptionNew context:nil];
+        [self.textContainer addObserver:self forKeyPath:kLineFragmentPaddingKey
+                                options:NSKeyValueObservingOptionNew context:nil];
     }
 
     if (HAS_TEXT_CONTAINER_INSETS(self)) {
         [self addObserver:self forKeyPath:kTextContainerInsetKey
                   options:NSKeyValueObservingOptionNew context:nil];
     }
-
 }
 
 - (void)setPlaceholder:(NSString *)placeholderText
 {
     _placeholder = placeholderText;
+    _attributedPlaceholder = [[NSAttributedString alloc] initWithString:placeholderText];
+
     [self resizePlaceholderFrame];
+}
+
+- (void)setAttributedPlaceholder:(NSAttributedString *)attributedPlaceholderText
+{
+    _placeholder = attributedPlaceholderText.string;
+    _attributedPlaceholder = attributedPlaceholderText;
+
+    [self resizePlaceholderFrame];
+}
+
+- (void)setContentInset:(UIEdgeInsets)contentInset{
+    [super setContentInset:contentInset];
+    self._placeholderTextView.contentInset = contentInset;
+}
+
+-(void)setContentOffset:(CGPoint)contentOffset{
+    [super setContentOffset:contentOffset];
+    self._placeholderTextView.contentOffset = contentOffset;
 }
 
 - (void)layoutSubviews
@@ -114,26 +160,36 @@ static NSString * const kTextContainerInsetKey = @"textContainerInset";
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object
                         change:(NSDictionary *)change context:(void *)context
 {
-    if ([keyPath isEqualToString:kPlaceholderKey]) {
+    if ([keyPath isEqualToString:kAttributedPlaceholderKey]) {
+        self._placeholderTextView.attributedText = [change valueForKey:NSKeyValueChangeNewKey];
+    }
+    else if ([keyPath isEqualToString:kPlaceholderKey]) {
         self._placeholderTextView.text = [change valueForKey:NSKeyValueChangeNewKey];
     }
     else if ([keyPath isEqualToString:kFontKey]) {
         self._placeholderTextView.font = [change valueForKey:NSKeyValueChangeNewKey];
     }
+    else if ([keyPath isEqualToString:kAttributedTextKey]) {
+        NSAttributedString *newAttributedText = [change valueForKey:NSKeyValueChangeNewKey];
+        [self setPlaceholderVisibleForText:newAttributedText.string];
+    }
     else if ([keyPath isEqualToString:kTextKey]) {
         NSString *newText = [change valueForKey:NSKeyValueChangeNewKey];
-        if (newText.length > 0) {
-            [self._placeholderTextView removeFromSuperview];
-        } else {
-            [self addSubview:self._placeholderTextView];
-        }
-    } else if ([keyPath isEqualToString:kExclusionPathsKey]) {
+        [self setPlaceholderVisibleForText:newText];
+    }
+    else if ([keyPath isEqualToString:kExclusionPathsKey]) {
         self._placeholderTextView.textContainer.exclusionPaths = [change objectForKey:NSKeyValueChangeNewKey];
         [self resizePlaceholderFrame];
-    } else if ([keyPath isEqualToString:kTextContainerInsetKey]) {
+    }
+    else if ([keyPath isEqualToString:kLineFragmentPaddingKey]) {
+        self._placeholderTextView.textContainer.lineFragmentPadding = [[change objectForKey:NSKeyValueChangeNewKey] floatValue];
+        [self resizePlaceholderFrame];
+    }
+    else if ([keyPath isEqualToString:kTextContainerInsetKey]) {
         NSValue *value = [change objectForKey:NSKeyValueChangeNewKey];
         self._placeholderTextView.textContainerInset = value.UIEdgeInsetsValue;
-    } else {
+    }
+    else {
         [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
     }
 }
@@ -150,7 +206,19 @@ static NSString * const kTextContainerInsetKey = @"textContainerInset";
 
 - (void)textDidChange:(NSNotification *)aNotification
 {
-    if (self.text.length < 1) {
+    [self setPlaceholderVisibleForText:self.text];
+}
+
+- (BOOL)becomeFirstResponder
+{
+    [self setPlaceholderVisibleForText:self.text];
+
+    return [super becomeFirstResponder];
+}
+
+- (void)setPlaceholderVisibleForText:(NSString *)text
+{
+    if (text.length < 1) {
         [self addSubview:self._placeholderTextView];
         [self sendSubviewToBack:self._placeholderTextView];
     } else {
@@ -161,12 +229,15 @@ static NSString * const kTextContainerInsetKey = @"textContainerInset";
 - (void)dealloc
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+    [self removeObserver:self forKeyPath:kAttributedPlaceholderKey];
     [self removeObserver:self forKeyPath:kPlaceholderKey];
     [self removeObserver:self forKeyPath:kFontKey];
+    [self removeObserver:self forKeyPath:kAttributedTextKey];
     [self removeObserver:self forKeyPath:kTextKey];
 
     if (HAS_TEXT_CONTAINER) {
         [self.textContainer removeObserver:self forKeyPath:kExclusionPathsKey];
+        [self.textContainer removeObserver:self forKeyPath:kLineFragmentPaddingKey];
     }
 
     if (HAS_TEXT_CONTAINER_INSETS(self)) {
@@ -175,4 +246,3 @@ static NSString * const kTextContainerInsetKey = @"textContainerInset";
 }
 
 @end
-

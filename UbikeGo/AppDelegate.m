@@ -7,17 +7,18 @@
 //
 
 #import "AppDelegate.h"
+#import <Parse/Parse.h>
+
 
 @implementation AppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     [MagicalRecord setupCoreDataStackWithStoreNamed:@"BikeModel"];
+    [Parse setApplicationId:@"ayXLWc1vtAImavoZl1nWXMtec0t4UetZMahT2vqn"
+                  clientKey:@"tG8ghTG1MEuDPZJjBEueHLb410DrG34ftUPPPROK"];
+    [PFAnalytics trackAppOpenedWithLaunchOptions:launchOptions];
     
-    NSString * language = [[NSLocale preferredLanguages] objectAtIndex:0];
-    NSLog(@"LANG:%@", language);
-    //zh-Hant
-    //en
     return YES;
 }
 							

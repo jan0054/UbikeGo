@@ -9,6 +9,16 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
+		<key>Pods-Bolts.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+		<key>Pods-Facebook-iOS-SDK.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
 		<key>Pods-HTAutocompleteTextField.xcscheme</key>
 		<dict>
 			<key>isShown</key>
@@ -25,6 +35,11 @@
 			<false/>
 		</dict>
 		<key>Pods-MagicalRecord.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+		<key>Pods-Parse.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
@@ -62,57 +77,72 @@
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
-		<key>07CC3698B8934E00B1F96A2E</key>
+		<key>063FC7B604834EBB93CDA799</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>0AF40E128DA348199A015CA2</key>
+		<key>26803FB39D014F5B99250BF6</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>2D2D3072AED34B458B38D21D</key>
+		<key>3389EB6BEBF44E1E8D291DC1</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>64625D918E2549BDA04E1E71</key>
+		<key>6055599DF52743F9952332B8</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>66C3E69C35E14CE8BFFBD5E2</key>
+		<key>637EB9824895461E9394D0BA</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>6829233B662F4B1488E56352</key>
+		<key>7E604C43BC524882B4A16C2A</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>81000A7E894B4AF18FDB4DDC</key>
+		<key>80E90261951F430FA814A48D</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>A5C9A627D33E4244B8DA51CF</key>
+		<key>89F0E9F4A6ED464C93DD05F0</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>C80B7AC29481493EBA545CE3</key>
+		<key>8D87C3CA50A14F6A9C8C7A1F</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>D6DBAC0F1BFB45D0B4FBBF4B</key>
+		<key>901871C7EF15432C9B8090CC</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>D9A0F50A9ED1450B87828A1E</key>
+		<key>9A3997A059CC493CB8245E17</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>B99F3FF909B647A4B109A545</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>D89558106A27446CB32148D4</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>FB4853C5891F4B17B2C95C70</key>
 		<dict>
 			<key>primary</key>
 			<true/>
