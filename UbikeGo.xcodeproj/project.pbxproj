@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B449553219A7001200FA58E8 /* grey_bike@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B449553119A7001200FA58E8 /* grey_bike@2x.png */; };
+		B449553519A710EC00FA58E8 /* MapPOI.m in Sources */ = {isa = PBXBuildFile; fileRef = B449553419A710EC00FA58E8 /* MapPOI.m */; };
 		B46D3EED196BE23A0011DF2F /* about_contact_us@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B46D3EE8196BE23A0011DF2F /* about_contact_us@2x.png */; };
 		B46D3EEE196BE23A0011DF2F /* about_follow_us@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B46D3EE9196BE23A0011DF2F /* about_follow_us@2x.png */; };
 		B46D3EEF196BE23A0011DF2F /* about_rating_us@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B46D3EEA196BE23A0011DF2F /* about_rating_us@2x.png */; };
@@ -159,6 +161,9 @@
 /* Begin PBXFileReference section */
 		27BFD7F70FC347A3BBDFA748 /* Pods.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.xcconfig; path = Pods/Pods.xcconfig; sourceTree = "<group>"; };
 		47E642AB1BF54703A4772E50 /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		B449553119A7001200FA58E8 /* grey_bike@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "grey_bike@2x.png"; sourceTree = "<group>"; };
+		B449553319A710EC00FA58E8 /* MapPOI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MapPOI.h; sourceTree = "<group>"; };
+		B449553419A710EC00FA58E8 /* MapPOI.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MapPOI.m; sourceTree = "<group>"; };
 		B46D3EE8196BE23A0011DF2F /* about_contact_us@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "about_contact_us@2x.png"; sourceTree = "<group>"; };
 		B46D3EE9196BE23A0011DF2F /* about_follow_us@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "about_follow_us@2x.png"; sourceTree = "<group>"; };
 		B46D3EEA196BE23A0011DF2F /* about_rating_us@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "about_rating_us@2x.png"; sourceTree = "<group>"; };
@@ -418,6 +423,8 @@
 				B48F51FA196428C900A0DA9E /* ViewController.m */,
 				B48F52D2196AA82C00A0DA9E /* Station.h */,
 				B48F52D3196AA82C00A0DA9E /* Station.m */,
+				B449553319A710EC00FA58E8 /* MapPOI.h */,
+				B449553419A710EC00FA58E8 /* MapPOI.m */,
 				B48F526B196551A800A0DA9E /* MapStation.h */,
 				B48F526C196551A800A0DA9E /* MapStation.m */,
 				B48F52211965340400A0DA9E /* RKStation.h */,
@@ -485,6 +492,7 @@
 		B48F528219655DD900A0DA9E /* Resource */ = {
 			isa = PBXGroup;
 			children = (
+				B449553119A7001200FA58E8 /* grey_bike@2x.png */,
 				B48C0DD319A46D8D004E1238 /* trip_back_alt@2x.png */,
 				B48C0DCD19A46CE5004E1238 /* trip_back@2x.png */,
 				B48C0DCE19A46CE5004E1238 /* trip_list@2x.png */,
@@ -673,6 +681,7 @@
 				B476F8A81998AA64001348E5 /* 10n@2x.png in Resources */,
 				B48C0D4F199A041B004E1238 /* cb_green_sel@2x.png in Resources */,
 				B476F8A71998AA64001348E5 /* 10d@2x.png in Resources */,
+				B449553219A7001200FA58E8 /* grey_bike@2x.png in Resources */,
 				B48F52BB19655F7200A0DA9E /* iTunesArtwork.png in Resources */,
 				B48C0D6E199A16B5004E1238 /* cb_parking_green@2x.png in Resources */,
 				B476F8C21998EB52001348E5 /* yellow_sel@2x.png in Resources */,
@@ -821,6 +830,7 @@
 				B48F51FB196428C900A0DA9E /* ViewController.m in Sources */,
 				B48F51F5196428C900A0DA9E /* AppDelegate.m in Sources */,
 				B48C0DAA199DF013004E1238 /* TripMapViewController.m in Sources */,
+				B449553519A710EC00FA58E8 /* MapPOI.m in Sources */,
 				B48F52231965340400A0DA9E /* RKStation.m in Sources */,
 				B48F521D19652DD000A0DA9E /* BikeModel.xcdatamodeld in Sources */,
 				B48F52D4196AA82C00A0DA9E /* Station.m in Sources */,

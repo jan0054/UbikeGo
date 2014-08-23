@@ -442,6 +442,7 @@ didUpdateUserLocation:
     for (id<MKAnnotation> annotation in self.mainmap.annotations) {
         [self.mainmap removeAnnotation:annotation];
     }
+    
     for (id key in self.fullstationdict)
     {
         Station *station = [self.fullstationdict objectForKey:key];

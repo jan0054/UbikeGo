@@ -16,7 +16,7 @@
 #import <RestKit/RestKit.h>
 #import "RKStation.h"
 #import "Station.h"
-
+#import "MapPOI.h"
 
 #define IS_IPHONE_5 ( fabs( ( double )[ [ UIScreen mainScreen ] bounds ].size.height - ( double )568 ) < DBL_EPSILON )
 
@@ -104,8 +104,9 @@ BOOL poisareready;
     //refresh code here
     poisareready = NO;
     [self setup_trip_list];
+    [self setup_bike_status];
     //[self.trippoitable reloadData];
-    [self process_trip_route];
+    //[self process_trip_route];
     NSLog(@"TABLE ROW COUNT:%d", self.poiarray.count+3);
     NSLog(@"TRIPINFO:%@,%@,%@", trip_name,trip_description,trip_duration);
     
@@ -372,6 +373,8 @@ didUpdateUserLocation:
             [self setup_poi_images:object withobjectid:objid atindex:poi_order islast:islast];
         }
         [self.trippoitable reloadData];
+        [self process_trip_route];
+        [self drawPOIToMap];
         NSLog(@"DATA:%@", self.poilocalarray);
         NSLog(@"COUNT:%d", self.poilocalarray.count);
     }];
@@ -514,6 +517,116 @@ didUpdateUserLocation:
     [operation start];
 }
 
+- (void) drawPOIToMap
+{
+    //remove any existing annotations from the trip map first
+    for (id<MKAnnotation> annotation in self.tripmap.annotations) {
+        [self.tripmap removeAnnotation:annotation];
+    }
+    
+    for (NSMutableDictionary *poiobj in self.poilocalarray)
+    {
+        double latdbl = [[poiobj objectForKey:@"lat"] doubleValue];
+        double londbl = [[poiobj objectForKey:@"lon"] doubleValue];
+
+        CLLocationCoordinate2D coordinate;
+        coordinate.latitude = latdbl;
+        coordinate.longitude = londbl;
+        UIImage *thepoiimage = [poiimg_id_dict objectForKey:[poiobj objectForKey:@"objid"]];
+        MapPOI *annotation = [[MapPOI alloc] initWithName:[poiobj objectForKey:@"name"] andname_en:[poiobj objectForKey:@"name_en"] anddescription:[poiobj objectForKey:@"description"] anddescription_en:[poiobj objectForKey:@"description_en"] andimage:thepoiimage andcoordinate:coordinate andobjectid:[poiobj objectForKey:@"objid"]];
+        [self.tripmap addAnnotation:annotation];
+    }
+}
+
+- (void) removeannotations
+{
+    //remove any existing annotations from the trip map
+    for (id<MKAnnotation> annotation in self.tripmap.annotations) {
+        [self.tripmap removeAnnotation:annotation];
+    }
+}
+
+- (MKAnnotationView *)mapView:(MKMapView *)mapView viewForAnnotation:(id <MKAnnotation>)annotation {
+    static NSString *identifier = @"MapPOI";
+    if ([annotation isKindOfClass:[MapPOI class]]) {
+        
+        MKAnnotationView *annotationView = (MKAnnotationView *) [self.tripmap dequeueReusableAnnotationViewWithIdentifier:identifier];
+        if (annotationView == nil) {
+            annotationView = [[MKAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:identifier];
+            annotationView.enabled = YES;
+            //annotationView.canShowCallout = YES;
+            
+            UILabel *poi_label = [[UILabel alloc] initWithFrame:CGRectMake(9, 10 , 50, 10)];
+            poi_label.backgroundColor = [UIColor blackColor];
+            poi_label.textColor = [UIColor whiteColor];
+            
+            poi_label.font = [UIFont fontWithName:@"Helvetica Neue" size:7];
+            poi_label.textAlignment = NSTextAlignmentCenter;
+            poi_label.tag = 66;
+            
+            [annotationView addSubview:poi_label];
+            
+        } else {
+            annotationView.annotation = annotation;
+        }
+        MapPOI *somepoi = annotation;
+        //annotationView.image = somepoi.image;
+        annotationView.image = [UIImage imageNamed:@"grey_bike"];
+        
+        UILabel *poilabel = (UILabel *)[annotationView viewWithTag:66];
+        poilabel.text = somepoi.name;
+        
+        return annotationView;
+    }
+    
+    return nil;
+}
+
+- (void) mapView:(MKMapView *)mapView didSelectAnnotationView:(MKAnnotationView *)view
+{
+    if (![view.annotation isKindOfClass:[MKUserLocation class]])
+    {
+        //[self.tripmap removeOverlays:self.tripmap.overlays];
+        MapPOI *somepoi = view.annotation;
+
+        switch (self.currentlang) {
+            case 0:
+                break;
+            case 1:
+                break;
+            default:
+                break;
+        }
+        
+        UIImage *toImage = view.image;
+        [UIView transitionWithView:view
+                          duration:0.5f
+                           options:UIViewAnimationOptionTransitionFlipFromLeft
+                        animations:^{
+                            view.image = toImage;
+                        } completion:nil];
+        
+    }
+}
+
+- (void) mapView:(MKMapView *)mapView didDeselectAnnotationView:(MKAnnotationView *)view
+{
+    if (![view.annotation isKindOfClass:[MKUserLocation class]])
+    {
+        //[self.mainmap removeOverlays:self.mainmap.overlays];
+        UIImage *toImage = view.image;
+        [UIView transitionWithView:view
+                          duration:0.5f
+                           options:UIViewAnimationOptionTransitionFlipFromLeft
+                        animations:^{
+                            view.image = toImage;
+                        } completion:nil];
+
+    }
+}
+
+
+
 //route user from source to destination, and optionally draw the route on map
 - (void) routeUserToDestination: (CLLocationCoordinate2D) destinationcord withSource: (CLLocationCoordinate2D) sourcecord withoverlay: (BOOL) drawoverlay
 {
@@ -615,4 +728,7 @@ didUpdateUserLocation:
         //[self.switch_view_button setTitle:@"列表" forState:UIControlStateHighlighted];
     }
 }
+
+
+
 @end
