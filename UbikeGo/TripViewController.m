@@ -63,9 +63,8 @@ BOOL poisareready;
     self.listup = YES;
     poisareready = NO;
     
-    //get the trip data
+    //setup all required data
     [self setup_trip_list];
-    [self setup_bike_status];
     
     //Pull To Refresh Controls
     self.pullrefresh = [[UIRefreshControl alloc] init];
@@ -87,14 +86,15 @@ BOOL poisareready;
 - (void) viewDidLayoutSubviews
 {
     //initial start:
-    self.trippoitable.frame = CGRectMake(0, 20, 320, 548);
     
     if( IS_IPHONE_5 )
-    {}
+    {
+        self.trippoitable.frame = CGRectMake(0, 20, 320, 548);
+    }
     else
     {
         //special layout for 3.5 inch screen
-        
+        [self.trippoitable setFrame:CGRectMake(0, 20, 320, 460)];
     }
 }
 
@@ -104,9 +104,7 @@ BOOL poisareready;
     //refresh code here
     poisareready = NO;
     [self setup_trip_list];
-    [self setup_bike_status];
-    //[self.trippoitable reloadData];
-    //[self process_trip_route];
+
     NSLog(@"TABLE ROW COUNT:%d", self.poiarray.count+3);
     NSLog(@"TRIPINFO:%@,%@,%@", trip_name,trip_description,trip_duration);
     
@@ -135,7 +133,7 @@ didUpdateUserLocation:
     userLocation.title = @"";
 }
 
-
+//set table header
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
 {
     UIImageView *imageView = [[UIImageView alloc] initWithImage:tripheader];
@@ -145,6 +143,7 @@ didUpdateUserLocation:
     return imageView;
 }
 
+//set table header height
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
 {
     return 100;
@@ -198,31 +197,29 @@ didUpdateUserLocation:
     //alternate layout of the poi cell
     TripPOITableViewCell *trippoialtcell = [tableView dequeueReusableCellWithIdentifier:@"trippoialtcell"];
     
-    
-    
-    
-    /*
-    switch (self.currentlang) {
-        case 0:
-            
-            break;
-        case 1:
-
-            break;
-            
-        default:
-
-            break;
-    }
-    */
-    
-    
     if (indexPath.row==0)
     {
-        tripinfocell.trip_name.text = trip_name;
-        tripinfocell.trip_description.text = trip_description;
-        tripinfocell.trip_duration.text = trip_duration;
-
+        switch (self.currentlang) {
+            case 0:
+                tripinfocell.trip_name.text = trip_name;
+                tripinfocell.trip_description.text = trip_description;
+                tripinfocell.trip_duration.text = trip_duration;
+                break;
+                        
+            case 1:
+                tripinfocell.trip_name.text = trip_name_en;
+                tripinfocell.trip_description.text = trip_description_en;
+                tripinfocell.trip_duration.text = trip_duration_en;
+                break;
+                
+            default:
+                tripinfocell.trip_name.text = trip_name_en;
+                tripinfocell.trip_description.text = trip_description_en;
+                tripinfocell.trip_duration.text = trip_duration_en;
+                break;
+        }
+        tripinfocell.selectionStyle = UITableViewCellSelectionStyleNone;
+        
         return tripinfocell;
     }
     else if (indexPath.row==1)
@@ -241,7 +238,23 @@ didUpdateUserLocation:
         {
             tripfootercellstart.bike_icon_image.image = [UIImage imageNamed:@"square_green"];
         }
-        tripfootercellstart.footer_description.text = starting_station.name_ch;
+        switch (self.currentlang) {
+            case 0:
+                tripfootercellstart.footer_description.text = starting_station.name_ch;
+                tripfootercellstart.footer_subtitle.text = starting_station.description_ch;
+                break;
+            case 1:
+                tripfootercellstart.footer_description.text = starting_station.name_en;
+                tripfootercellstart.footer_subtitle.text = starting_station.description_en;
+                break;
+                
+            default:
+                tripfootercellstart.footer_description.text = starting_station.name_en;
+                tripfootercellstart.footer_subtitle.text = starting_station.description_en;
+                break;
+        }
+        tripfootercellstart.selectionStyle = UITableViewCellSelectionStyleNone;
+        
         return tripfootercellstart;
     }
     else if (indexPath.row==(self.poilocalarray.count+2))
@@ -260,8 +273,23 @@ didUpdateUserLocation:
         {
             tripfootercellend.bike_icon_image.image = [UIImage imageNamed:@"square_green_parking"];
         }
-        tripfootercellend.footer_description.text = ending_station.name_ch;
-
+                switch (self.currentlang) {
+            case 0:
+                tripfootercellend.footer_description.text = ending_station.name_ch;
+                tripfootercellend.footer_subtitle.text = ending_station.description_ch;
+                break;
+            case 1:
+                tripfootercellend.footer_description.text = ending_station.name_en;
+                tripfootercellend.footer_subtitle.text = ending_station.description_en;
+                break;
+                
+            default:
+                tripfootercellend.footer_description.text = ending_station.name_en;
+                tripfootercellend.footer_subtitle.text = ending_station.description_en;
+                break;
+        }
+        tripfootercellend.selectionStyle = UITableViewCellSelectionStyleNone;
+        
         return tripfootercellend;
     }
     else if (indexPath.row % 2)
@@ -283,8 +311,12 @@ didUpdateUserLocation:
                 break;
                 
             default:
+                trippoicell.poiname.text = [poidict objectForKey:@"name_en"];
+                trippoicell.poidescription.text = [poidict objectForKey:@"description_en"];
                 break;
         }
+        trippoicell.selectionStyle = UITableViewCellSelectionStyleNone;
+        
         return trippoicell;
     }
     else
@@ -306,12 +338,14 @@ didUpdateUserLocation:
                 break;
                 
             default:
+                trippoialtcell.poiname.text = [poidict objectForKey:@"name_en"];
+                trippoialtcell.poidescription.text = [poidict objectForKey:@"description_en"];
                 break;
         }
+        trippoialtcell.selectionStyle = UITableViewCellSelectionStyleNone;
 
         return trippoialtcell;
     }
-        
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
@@ -372,67 +406,17 @@ didUpdateUserLocation:
             }
             [self setup_poi_images:object withobjectid:objid atindex:poi_order islast:islast];
         }
-        [self.trippoitable reloadData];
+
+        [self setup_bike_status];
         [self process_trip_route];
         [self drawPOIToMap];
         NSLog(@"DATA:%@", self.poilocalarray);
         NSLog(@"COUNT:%d", self.poilocalarray.count);
     }];
     
-     /*
-    PFQuery *tripquery = [PFQuery queryWithClassName:@"trip"];
-    [tripquery getObjectInBackgroundWithId:self.tripobjid block:^(PFObject *object, NSError *error) {
-        
-        self.poiarray = [[NSArray alloc] initWithArray: object[@"pois"]];
-        
-        //query for poi -> query for poi image -> deal with the data in the image query completion block
-        for (PFObject *poiobj in self.poiarray)
-        {
-            PFQuery *poiquery = [PFQuery queryWithClassName:@"poi"];
-            [poiquery getObjectInBackgroundWithId:poiobj.objectId block:^(PFObject *object, NSError *error) {
-                PFGeoPoint *poicord = object[@"location"];
-                double lat = poicord.latitude;
-                double lon = poicord.longitude;
-                NSNumber *nslat = [NSNumber numberWithDouble:lat];
-                NSNumber *nslon = [NSNumber numberWithDouble:lon];
-                PFFile *poiimagefile = object[@"image"];
-                [poiimagefile getDataInBackgroundWithBlock:^(NSData *imageData, NSError *error) {
-                    if (!error) {
-                        UIImage *poiimage = [UIImage imageWithData:imageData];
-                        NSDictionary *local_poi = [[NSDictionary alloc] initWithObjectsAndKeys:poiimage,@"image", object[@"name"],@"name",object[@"name_en"],@"name_en", object[@"description"],@"description", object[@"description_en"], @"description_en", nslat, @"lat", nslon, @"lon", nil];
-                        [self.poilocalarray addObject:local_poi];
-                    }
-                }];
+     }
 
-            }];
-            
-        }
-        
-        trip_name = object[@"name"];
-        trip_name_en = object[@"name_en"];
-        trip_description = object[@"description"];
-        trip_description_en = object[@"description_en"];
-        trip_duration = object[@"duration"];
-        trip_duration_en = object[@"duration_en"];
-        
-        NSString *startstr = object[@"start_station"];
-        NSString *endstr = object[@"end_station"];
-        NSNumberFormatter * f = [[NSNumberFormatter alloc] init];
-        [f setNumberStyle:NSNumberFormatterDecimalStyle];
-        start_station = [f numberFromString:startstr];
-        end_station = [f numberFromString:endstr];
-        
-        PFFile *tripimage = object[@"image"];
-        [tripimage getDataInBackgroundWithBlock:^(NSData *imageData, NSError *error) {
-            if (!error) {
-                tripheader = [UIImage imageWithData:imageData];
-            }
-        }];
-        
-    }];
-    */
-}
-
+//setup the poi images for use in poiimg_id_dict
 - (void) setup_poi_images: (PFObject *) poiobject withobjectid: (NSString *) objid atindex: (int) index islast: (BOOL) islast
 {
     NSLog(@"DRAWING IMG %d", index);
@@ -449,18 +433,11 @@ didUpdateUserLocation:
             {
                 [self.trippoitable reloadData];
             }
-            
-            /*
-            if (islast)
-            {
-                [self.trippoitable reloadData];
-            }
-            */
         }
     }];
 }
 
-//grab updated info on bike numbers (actually we only want info on start/end stations
+//grab updated info on bike numbers (actually we only want info on start/end stations)
 - (void) setup_bike_status
 {
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKStation class]];
@@ -510,7 +487,8 @@ didUpdateUserLocation:
         }
         starting_station = [self.fullstationdict objectForKey:start_station];
         ending_station = [self.fullstationdict objectForKey:end_station];
-        
+        [self.trippoitable reloadData];
+
     } failure:^(RKObjectRequestOperation *operation, NSError *error) {
         RKLogError(@"Operation failed with error: %@", error);
     }];
@@ -556,10 +534,11 @@ didUpdateUserLocation:
             annotationView.enabled = YES;
             //annotationView.canShowCallout = YES;
             
-            UILabel *poi_label = [[UILabel alloc] initWithFrame:CGRectMake(9, 10 , 50, 10)];
-            poi_label.backgroundColor = [UIColor blackColor];
+            UILabel *poi_label = [[UILabel alloc] initWithFrame:CGRectMake(-13, -13 , 50, 10)];
+            //poi_label.backgroundColor = [UIColor colorWithRed:188.0/255.0 green:188.0/255.0 blue:188.0/255.0 alpha:1.0];
+            poi_label.backgroundColor = [UIColor darkGrayColor];
             poi_label.textColor = [UIColor whiteColor];
-            
+            poi_label.layer.cornerRadius = 4.0;
             poi_label.font = [UIFont fontWithName:@"Helvetica Neue" size:7];
             poi_label.textAlignment = NSTextAlignmentCenter;
             poi_label.tag = 66;
@@ -571,11 +550,34 @@ didUpdateUserLocation:
         }
         MapPOI *somepoi = annotation;
         //annotationView.image = somepoi.image;
-        annotationView.image = [UIImage imageNamed:@"grey_bike"];
+        annotationView.image = [UIImage imageNamed:@"marker_generic_grey"];
         
         UILabel *poilabel = (UILabel *)[annotationView viewWithTag:66];
-        poilabel.text = somepoi.name;
         
+        switch (self.currentlang) {
+            case 0:
+                poilabel.text = somepoi.name;
+                break;
+                
+            case 1:
+                poilabel.text = somepoi.name_en;
+                break;
+                
+            default:
+                poilabel.text = somepoi.name_en;
+                break;
+        }
+        [poilabel sizeToFit];
+        double ogwidth = poilabel.frame.size.width;
+        double ogheight = poilabel.frame.size.height;
+        [poilabel setFrame:CGRectMake(12-(ogwidth/(float)2.0), -13, ogwidth, ogheight)];
+        UIBezierPath *shadowPath = [UIBezierPath bezierPathWithRect:poilabel.bounds];
+        poilabel.layer.masksToBounds = NO;
+        poilabel.layer.shadowColor = [UIColor blackColor].CGColor;
+        poilabel.layer.shadowOffset = CGSizeMake(2.0f, 2.0f);
+        poilabel.layer.shadowOpacity = 0.3f;
+        poilabel.layer.shadowPath = shadowPath.CGPath;
+
         return annotationView;
     }
     
@@ -587,7 +589,7 @@ didUpdateUserLocation:
     if (![view.annotation isKindOfClass:[MKUserLocation class]])
     {
         //[self.tripmap removeOverlays:self.tripmap.overlays];
-        MapPOI *somepoi = view.annotation;
+        //MapPOI *somepoi = view.annotation;
 
         switch (self.currentlang) {
             case 0:
@@ -597,7 +599,7 @@ didUpdateUserLocation:
             default:
                 break;
         }
-        
+        /*
         UIImage *toImage = view.image;
         [UIView transitionWithView:view
                           duration:0.5f
@@ -605,7 +607,7 @@ didUpdateUserLocation:
                         animations:^{
                             view.image = toImage;
                         } completion:nil];
-        
+        */
     }
 }
 
@@ -614,17 +616,17 @@ didUpdateUserLocation:
     if (![view.annotation isKindOfClass:[MKUserLocation class]])
     {
         //[self.mainmap removeOverlays:self.mainmap.overlays];
+        /*
         UIImage *toImage = view.image;
         [UIView transitionWithView:view
                           duration:0.5f
-                           options:UIViewAnimationOptionTransitionFlipFromLeft
+                           options:UIViewAnimationOptionTransitionFlipFromRight
                         animations:^{
                             view.image = toImage;
                         } completion:nil];
-
+        */
     }
 }
-
 
 
 //route user from source to destination, and optionally draw the route on map
@@ -663,7 +665,7 @@ didUpdateUserLocation:
 -(MKOverlayRenderer *)mapView:(MKMapView *)mapView rendererForOverlay:(id<MKOverlay>)overlay {
     MKPolylineRenderer  * routeLineRenderer = [[MKPolylineRenderer alloc] initWithPolyline:routeDetails.polyline];
     routeLineRenderer.strokeColor = [UIColor colorWithRed:61.0f/255.0f green:198.0f/255.0f blue:243.0f/255.0f alpha:1.0];
-    routeLineRenderer.lineWidth = 3;
+    routeLineRenderer.lineWidth = 2;
     return routeLineRenderer;
 }
 
@@ -711,10 +713,8 @@ didUpdateUserLocation:
             self.trippoitable.frame = CGRectMake(0, 20, 320, 548);
         }];
         self.listup = YES;
-        [self.switch_view_button setImage:[UIImage imageNamed:@"trip_map"] forState:UIControlStateNormal];
-        [self.switch_view_button setImage:[UIImage imageNamed:@"trip_map"] forState:UIControlStateHighlighted];
-        //[self.switch_view_button setTitle:@"地圖" forState:UIControlStateNormal];
-        //[self.switch_view_button setTitle:@"地圖" forState:UIControlStateHighlighted];
+        [self.switch_view_button setImage:[UIImage imageNamed:@"re_map"] forState:UIControlStateNormal];
+        [self.switch_view_button setImage:[UIImage imageNamed:@"re_map"] forState:UIControlStateHighlighted];
     }
     else
     {
@@ -722,10 +722,8 @@ didUpdateUserLocation:
             self.trippoitable.frame = CGRectMake(0, 566, 320, 548);
         }];
         self.listup = NO;
-        [self.switch_view_button setImage:[UIImage imageNamed:@"trip_list"] forState:UIControlStateNormal];
-        [self.switch_view_button setImage:[UIImage imageNamed:@"trip_list"] forState:UIControlStateHighlighted];
-        //[self.switch_view_button setTitle:@"列表" forState:UIControlStateNormal];
-        //[self.switch_view_button setTitle:@"列表" forState:UIControlStateHighlighted];
+        [self.switch_view_button setImage:[UIImage imageNamed:@"re_list"] forState:UIControlStateNormal];
+        [self.switch_view_button setImage:[UIImage imageNamed:@"re_list"] forState:UIControlStateHighlighted];
     }
 }
 

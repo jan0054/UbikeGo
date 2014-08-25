@@ -82,7 +82,6 @@
 @property NSArray *trip_list_array;
 @property PFObject *selected_trip;
 @property NSArray *selected_pois;
-- (IBAction)testbutton:(UIButton *)sender;
 @property NSString *trip_name;
 @property NSString *trip_name_en;
 @property NSString *trip_description;

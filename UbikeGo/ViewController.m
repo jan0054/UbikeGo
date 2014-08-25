@@ -31,7 +31,6 @@ CLLocationCoordinate2D selected_station_cord;
 bool nearybylistishidden;
 NSString *selected_tripobj_id;
 
-
 @synthesize fullstationdict;
 @synthesize nearbystationarray;
 @synthesize pullrefresh;
@@ -151,9 +150,7 @@ NSString *selected_tripobj_id;
     [pullrefresh addTarget:self action:@selector(refreshctrl:) forControlEvents:UIControlEventValueChanged];
     [self.nearby_list_table addSubview:pullrefresh];
     
-    
-    
-    //self.trip_list_array = [[NSArray alloc] init];
+
 }
 
 - (void) viewDidAppear:(BOOL)animated
@@ -761,7 +758,12 @@ didUpdateUserLocation:
     }];
     
     [UIView animateWithDuration:0.5 animations:^{
-        self.nearby_list_view.frame = CGRectMake(0, 367, 320, 200);
+        if( IS_IPHONE_5 )
+        {self.nearby_list_view.frame = CGRectMake(0, 367, 320, 200);
+        }
+        else
+        {self.nearby_list_view.frame = CGRectMake(0, 367-84, 320, 200);
+        }
     }];
     [self center_on_user];
     nearybylistishidden=NO;
@@ -791,7 +793,12 @@ didUpdateUserLocation:
 - (IBAction)open_menu_action:(UIButton *)sender {
     [UIView animateWithDuration:0.5 animations:^{
         self.setting_view.frame = CGRectMake(0, 566, 320, 477);
-        self.inapplogoview.frame = CGRectMake(0, 367, 320, 200);
+        if( IS_IPHONE_5 )
+        {self.inapplogoview.frame = CGRectMake(0, 367, 320, 200);
+        }
+        else
+        {self.inapplogoview.frame = CGRectMake(0, 367-84, 320, 200);
+        }
     }];
     [self update_arrow_state];
 }
@@ -837,15 +844,14 @@ didUpdateUserLocation:
             case 1:
                 cell.trip_name.text = tripobj[@"name_en"];
                 cell.trip_duration.text = tripobj[@"duration_en"];
-                cell.num_of_pois.text = [NSString stringWithFormat:@"%d scenic points",[poiarray count]];
+                cell.num_of_pois.text = [NSString stringWithFormat:@"%d stops",[poiarray count]];
                 break;
                 
             default:
                 cell.trip_name.text = tripobj[@"name_en"];
                 cell.trip_duration.text = tripobj[@"duration_en"];
-                cell.num_of_pois.text = [NSString stringWithFormat:@"%d scenic points",[poiarray count]];
+                cell.num_of_pois.text = [NSString stringWithFormat:@"%d stops",[poiarray count]];
             break;
-                
         }
         
         PFFile *tripimage = tripobj[@"image"];
@@ -1009,7 +1015,12 @@ didUpdateUserLocation:
     }];
     
     [UIView animateWithDuration:0.5 animations:^{
-        self.nearby_list_view.frame = CGRectMake(0, 367, 320, 200);
+        if( IS_IPHONE_5 )
+        {self.nearby_list_view.frame = CGRectMake(0, 367, 320, 200);
+        }
+        else
+        {self.nearby_list_view.frame = CGRectMake(0, 367-84, 320, 200);
+        }
     }];
     [self center_on_user];
     nearybylistishidden=NO;
@@ -1231,7 +1242,6 @@ didUpdateUserLocation:
         self.parking_yellow = [UIImage imageNamed:@"parking_yellow.png"];
         self.parking_red = [UIImage imageNamed:@"parking_red.png"];
     }
-
 }
 
 - (void) gotoreview
@@ -1240,6 +1250,7 @@ didUpdateUserLocation:
     [[UIApplication sharedApplication] openURL:[NSURL URLWithString:str]];
 }
 
+//temp method
 - (void) upload_poi
 {
     NSLog(@"poi upload");
@@ -1280,6 +1291,7 @@ didUpdateUserLocation:
 
 }
 
+//temp method
 - (void) upload_trip
 {
     NSLog(@"upload trip");
@@ -1367,7 +1379,5 @@ didUpdateUserLocation:
 }
 
 
-- (IBAction)testbutton:(UIButton *)sender {
-    [self upload_trip];
-}
+
 @end

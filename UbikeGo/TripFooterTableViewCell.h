@@ -12,5 +12,6 @@
 @property (strong, nonatomic) IBOutlet UIImageView *bike_icon_image;
 @property (strong, nonatomic) IBOutlet UILabel *footer_description;
 @property (strong, nonatomic) IBOutlet UILabel *current_num;
+@property (strong, nonatomic) IBOutlet UILabel *footer_subtitle;
 
 @end
