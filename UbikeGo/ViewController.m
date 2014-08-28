@@ -854,7 +854,7 @@ didUpdateUserLocation:
             break;
         }
         
-        PFFile *tripimage = tripobj[@"image"];
+        PFFile *tripimage = tripobj[@"thumb"];
         [tripimage getDataInBackgroundWithBlock:^(NSData *imageData, NSError *error) {
             if (!error) {
                 cell.trip_image.image = [UIImage imageWithData:imageData];
@@ -1253,33 +1253,24 @@ didUpdateUserLocation:
 //temp method
 - (void) upload_poi
 {
+    /*
     NSLog(@"poi upload");
     PFObject *poi = [PFObject objectWithClassName:@"poi"];
-    poi[@"name"] = @"臺北車站";
-    poi[@"name_en"] = @"Taipei main station";
-    poi[@"author"] = @"CSJ";
-    poi[@"author_en"] = @"CSJ";
-    poi[@"description"] = @"台北車站有很多車, 但你的車停這邊要花很多錢";
-    poi[@"description_en"] = @"Taipei main station is the main station in Taipei. Now say it really fast twice.";
+    poi[@"name"] = @"寶藏巖";
+    poi[@"name_en"] = @"Treasure Hill";
+    poi[@"author"] = @"S.Lin";
+    poi[@"author_en"] = @"S.Lin";
+    poi[@"description"] = @"依山傍水的老聚落，新注入了來自各國藝文人士的創作能量，值得您一訪！這是臺北近年來都市更新最為成功的例子之一，也是新店溪畔不可錯過的絕美景點。";
+    poi[@"description_en"] = @"Once just an old cluster of buildings on a hill overlooking the edge of Taipei. Recent urban renovations have turned this hill into a hip riverside attraction. One of the best spots that even Taipei locals sometimes don't know about.";
     poi[@"phone"] = @"0975087264";
     poi[@"address"] = @"大安區金華街522號";
     poi[@"link"] = @"http://tapgo.cc";
-    PFGeoPoint *location = [PFGeoPoint geoPointWithLatitude:25.04764 longitude:121.51723];
+    PFGeoPoint *location = [PFGeoPoint geoPointWithLatitude:25.01122 longitude:121.53318];
     poi[@"location"] = location;
-    
-    UIImage *image1 = [UIImage imageNamed:@"tpe_gov"];
-    UIImage *image2 = [UIImage imageNamed:@"tpe_101"];
-    UIImage *image3 = [UIImage imageNamed:@"tpe_station"];
-    
-    NSData *imageData1 = UIImagePNGRepresentation(image1);
-    NSData *imageData2 = UIImagePNGRepresentation(image2);
-    NSData *imageData3 = UIImagePNGRepresentation(image3);
-    
-    PFFile *imageFile1 = [PFFile fileWithName:@"tpe_gov.png" data:imageData1];
-    PFFile *imageFile2 = [PFFile fileWithName:@"tpe_101.png" data:imageData2];
-    PFFile *imageFile3 = [PFFile fileWithName:@"tpe_station.png" data:imageData3];
-    
-    poi[@"image"] = imageFile3;
+    UIImage *image = [UIImage imageNamed:@"poi_nightview"];
+    NSData *imageData = UIImagePNGRepresentation(image);
+    PFFile *imageFile = [PFFile fileWithName:@"poi_nightview.png" data:imageData];
+    poi[@"image"] = imageFile;
     
     [poi saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
         if (succeeded) {
@@ -1288,52 +1279,46 @@ didUpdateUserLocation:
             NSLog(@"poi post error: %@", error);
         }
     }];
-
+     */
 }
 
 //temp method
 - (void) upload_trip
 {
     NSLog(@"upload trip");
-    PFObject *trip = [PFObject objectWithoutDataWithClassName:@"trip" objectId:@"tNrMRfYG02"];
-    PFObject *poi1 = [PFObject objectWithoutDataWithClassName:@"poi" objectId:@"rwpfOOTpk2"];
-    PFObject *poi2 = [PFObject objectWithoutDataWithClassName:@"poi" objectId:@"5fnFzcOEje"];
-    PFObject *poi3 = [PFObject objectWithoutDataWithClassName:@"poi" objectId:@"1XFjkwHpo6"];
-    NSArray *poiarray = [[NSArray alloc] initWithObjects:poi2, poi3, poi1, nil];
-    trip[@"pois"] = poiarray;
+    
+    PFObject *trip = [PFObject objectWithoutDataWithClassName:@"trip" objectId:@"fZzNvfsByc"];
+    //PFObject *poi1 = [PFObject objectWithoutDataWithClassName:@"poi" objectId:@"rwpfOOTpk2"];
+    //PFObject *poi2 = [PFObject objectWithoutDataWithClassName:@"poi" objectId:@"5fnFzcOEje"];
+    //PFObject *poi3 = [PFObject objectWithoutDataWithClassName:@"poi" objectId:@"1XFjkwHpo6"];
+    //NSArray *poiarray = [[NSArray alloc] initWithObjects:poi2, poi3, poi1, nil];
+    UIImage *image1 = [UIImage imageNamed:@"trip_nightlife_thumb"];
+    NSData *imageData1 = UIImagePNGRepresentation(image1);
+    PFFile *imageFile1 = [PFFile fileWithName:@"trip_nightlife_thumb.png" data:imageData1];
+
+    trip[@"thumb"] = imageFile1;
     [trip saveInBackground];
-    /*
-    //PFObject *trip = [PFObject objectWithoutDataWithClassName:@"trip" objectId:@"tNrMRfYG02"];
-    //PFObject *trip = [PFObject objectWithoutDataWithClassName:@"trip" objectId:@"9TjQmlkvQW"];
-    PFObject *trip = [PFObject objectWithoutDataWithClassName:@"trip" objectId:@"h0zk2WB3nx"];
-    PFObject *poi3 = [PFObject objectWithoutDataWithClassName:@"poi" objectId:@"1XFjkwHpo6"];
-    PFObject *poi2 = [PFObject objectWithoutDataWithClassName:@"poi" objectId:@"5fnFzcOEje"];
-    PFObject *poi1 = [PFObject objectWithoutDataWithClassName:@"poi" objectId:@"rwpfOOTpk2"];
-    PFRelation *trip_poi_relation = [trip relationForKey:@"poisintrip"];
-    [trip_poi_relation addObject:poi1];
-    [trip_poi_relation addObject:poi2];
-    [trip_poi_relation addObject:poi3];
-    [trip saveInBackground];
-     */
+    
     /*
     PFObject *trip = [PFObject objectWithClassName:@"trip"];
-    trip[@"name"] = @"東區快樂遊";
-    trip[@"name_en"] = @"Taipei for the rich and powerful";
+    trip[@"name"] = @"時尚東區單車遊";
+    trip[@"name_en"] = @"The east side: hip, young, exciting";
     trip[@"author"] = @"CSJ";
     trip[@"author_en"] = @"CSJ";
-    trip[@"description"] = @"來東區騎個車, 見識下天龍人的生活吧!";
-    trip[@"description_en"] = @"Check out eastern Taipei, where the rich and powerful live their lives of luxury.";
-    trip[@"duration"] = @"1~2個小時";
-    trip[@"duration_en"] = @"1~2 hours";
-    PFObject *poi1 = [PFObject objectWithoutDataWithClassName:@"poi" objectId:@"rwpfOOTpk2"];
-    PFObject *poi2 = [PFObject objectWithoutDataWithClassName:@"poi" objectId:@"5fnFzcOEje"];
-    PFObject *poi3 = [PFObject objectWithoutDataWithClassName:@"poi" objectId:@"1XFjkwHpo6"];
+    trip[@"description"] = @"喜歡購物的你，一條路線滿足你對國際精品的嚮往&把玩特色文創商品的驚喜。";
+    trip[@"description_en"] = @"Performance arts, fusion cuisine, and shopping. If you enjoy a more playful side of Taipei then you simply must try this trip!";
+    trip[@"duration"] = @"3-4小時";
+    trip[@"duration_en"] = @"3-4 hours";
+    PFObject *poi1 = [PFObject objectWithoutDataWithClassName:@"poi" objectId:@"Q4D4QUQ0ER"];
+    PFObject *poi2 = [PFObject objectWithoutDataWithClassName:@"poi" objectId:@"kzmWhttrPX"];
+    PFObject *poi3 = [PFObject objectWithoutDataWithClassName:@"poi" objectId:@"mcaU3P0tYx"];
+
     NSArray *poiarray = [[NSArray alloc] initWithObjects:poi1, poi2, poi3, nil];
     trip[@"pois"] = poiarray;
     
-    UIImage *image1 = [UIImage imageNamed:@"east_tpe"];
+    UIImage *image1 = [UIImage imageNamed:@"trip_nightlife"];
     NSData *imageData1 = UIImagePNGRepresentation(image1);
-    PFFile *imageFile1 = [PFFile fileWithName:@"east_tpe.png" data:imageData1];
+    PFFile *imageFile1 = [PFFile fileWithName:@"trip_nightlife.png" data:imageData1];
     trip[@"image"] = imageFile1;
     
     [trip saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
