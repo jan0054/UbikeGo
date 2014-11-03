@@ -91,4 +91,6 @@
 @property NSNumber *start_station;
 @property NSNumber *end_station;
 @property UIImage *tripheader;
+@property CLLocationManager *locationManager;
+
 @end

@@ -57,10 +57,20 @@ NSString *selected_tripobj_id;
 @synthesize start_station;
 @synthesize end_station;
 @synthesize tripheader;
+@synthesize locationManager;
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    self.locationManager = [[CLLocationManager alloc] init];
+    self.locationManager.delegate = self;
+    
+    // Check for iOS 8
+    if ([self.locationManager respondsToSelector:@selector(requestAlwaysAuthorization)]) {
+        [self.locationManager requestWhenInUseAuthorization];
+    }
+    
 	self.mainmap.showsUserLocation=YES;
     
     self.walker_image.layer.cornerRadius=2;
@@ -150,7 +160,6 @@ NSString *selected_tripobj_id;
     [pullrefresh addTarget:self action:@selector(refreshctrl:) forControlEvents:UIControlEventValueChanged];
     [self.nearby_list_table addSubview:pullrefresh];
     
-
 }
 
 - (void) viewDidAppear:(BOOL)animated
@@ -160,17 +169,14 @@ NSString *selected_tripobj_id;
     [self center_on_taipei_and_refresh];
     [self setup_trip_list];
     [self getweatheronline];
+    
+    
 }
 
-//ui layout
+//special ui layout
 - (void) viewDidLayoutSubviews
 {
-    //initial start: hide the top menu and the bottom nearby station list
-    self.nearby_list_view.frame = CGRectMake(0, 566, 320, 200);
-    self.setting_view.frame = CGRectMake(0, 566, 320, 200);
-    self.inapplogoview.frame = CGRectMake(0, 566, 320, 200);
-    self.infobar.frame= CGRectMake(0, -90, 320, 90);
-    self.menubar.frame= CGRectMake(0, -90, 320, 90);
+    //[self setup_initial_ui];
     if( IS_IPHONE_5 )
     {}
     else
@@ -180,6 +186,19 @@ NSString *selected_tripobj_id;
         self.smallmenu_outlet.frame = CGRectMake(138, 404, 44, 44);
         self.center_outlet.frame = CGRectMake(256, 404, 44, 44);
     }
+
+}
+
+- (void) setup_initial_ui
+{
+    //initial start: hide the top menu and the bottom nearby station list
+    self.nearby_list_view.frame = CGRectMake(0, 566, 320, 200);
+    self.setting_view.frame = CGRectMake(0, 566, 320, 200);
+    self.inapplogoview.frame = CGRectMake(0, 566, 320, 200);
+    self.infobar.frame= CGRectMake(0, -90, 320, 90);
+    NSLog(@"INITIAL MOVE UP");
+    self.menubar.frame= CGRectMake(0, -90, 320, 90);
+    
 }
 
 - (void) setup_shadows
@@ -191,14 +210,14 @@ NSString *selected_tripobj_id;
     self.menubar.layer.shadowOffset = CGSizeMake(0.0f, 3.0f);
     self.menubar.layer.shadowOpacity = 0.3f;
     self.menubar.layer.shadowPath = shadowPath.CGPath;
-    
+    /*
     UIBezierPath *shadowPathtwo = [UIBezierPath bezierPathWithRect:self.infobar.bounds];
     self.infobar.layer.masksToBounds = NO;
     self.infobar.layer.shadowColor = [UIColor blackColor].CGColor;
     self.infobar.layer.shadowOffset = CGSizeMake(0.0f, 3.0f);
     self.infobar.layer.shadowOpacity = 0.3f;
     self.infobar.layer.shadowPath = shadowPathtwo.CGPath;
-    
+    */
     UIBezierPath *shadowPaththree = [UIBezierPath bezierPathWithRect:self.nearby_list_view.bounds];
     self.nearby_list_view.layer.masksToBounds = NO;
     self.nearby_list_view.layer.shadowColor = [UIColor blackColor].CGColor;
@@ -542,8 +561,10 @@ didUpdateUserLocation:
 
 - (void) mapView:(MKMapView *)mapView didSelectAnnotationView:(MKAnnotationView *)view
 {
+    NSLog(@"ANNOTATION SELECTED");
     if (![view.annotation isKindOfClass:[MKUserLocation class]])
     {
+        NSLog(@"NOT USER SELF ANNOTATION SELECTED");
         [self.mainmap removeOverlays:self.mainmap.overlays];
         MapStation *somemapstation = view.annotation;
     
@@ -628,16 +649,20 @@ didUpdateUserLocation:
         
         [UIView animateWithDuration:0.3 animations:^{
             self.infobar.frame= CGRectMake(0, 0, 320, 90);
+            NSLog(@"SELECTED MOVE DOWN");
         }];
-        [self routeUserToDestination:selected_station_cord withoverlay:NO];
+        
+        //[self routeUserToDestination:selected_station_cord withoverlay:NO];
         NSLog(@"ID:%@", somemapstation.sid);
     }
 }
 
 - (void) mapView:(MKMapView *)mapView didDeselectAnnotationView:(MKAnnotationView *)view
 {
+    NSLog(@"DESELECT ANNOTATION");
     if (![view.annotation isKindOfClass:[MKUserLocation class]])
     {
+        NSLog(@"DESELECT NOT USER ANNOTATION");
         //[self.mainmap removeOverlays:self.mainmap.overlays];
         self.navdistance_label.text=@"";
         self.navtime_label.text = @"";
@@ -683,10 +708,12 @@ didUpdateUserLocation:
                             } completion:nil];
         }
         
-
+        
         [UIView animateWithDuration:0.3 animations:^{
             self.infobar.frame= CGRectMake(0, -90, 320, 90);
+            NSLog(@"DESELECT MOVE UP");
         }];
+        
     }
 }
 
@@ -755,6 +782,7 @@ didUpdateUserLocation:
     }];
     [UIView animateWithDuration:0.3 animations:^{
         self.infobar.frame= CGRectMake(0, -90, 320, 90);
+        NSLog(@"LONG PRESS MOVE UP");
     }];
     
     [UIView animateWithDuration:0.5 animations:^{
@@ -1012,6 +1040,7 @@ didUpdateUserLocation:
     }];
     [UIView animateWithDuration:0.3 animations:^{
         self.infobar.frame= CGRectMake(0, -90, 320, 90);
+        NSLog(@"HAMBRGER BUTTON MOVE UP");
     }];
     
     [UIView animateWithDuration:0.5 animations:^{
@@ -1362,6 +1391,7 @@ didUpdateUserLocation:
     controller.end_station = self.end_station;
     controller.tripheader = self.tripheader;
 }
+
 
 
 
