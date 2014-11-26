@@ -126,7 +126,6 @@ NSString *selected_tripobj_id;
         [self.degree_unit_button setTitle:@"°C" forState:UIControlStateHighlighted];
     }
 
-    
     //init data structure
     self.fullstationdict = [[NSMutableDictionary alloc] init];
     self.nearbystationarray = [[NSMutableArray alloc] init];
@@ -141,7 +140,6 @@ NSString *selected_tripobj_id;
     self.infobar.barStyle = UIBarStyleDefault;
     self.infobar.opaque=NO;
     self.infobar.translucent=YES;
-    
     self.menubar.barStyle = UIBarStyleDefault;
     self.menubar.opaque=NO;
     self.menubar.translucent=YES;
@@ -169,8 +167,6 @@ NSString *selected_tripobj_id;
     [self center_on_taipei_and_refresh];
     [self setup_trip_list];
     [self getweatheronline];
-    
-    
 }
 
 //special ui layout
@@ -367,21 +363,42 @@ didUpdateUserLocation:
     
     [operation setCompletionBlockWithSuccess:^(RKObjectRequestOperation *operation, RKMappingResult *result) {
         
+        //flag for stations not found, implying need for full update of station listing
+        int need_full_update = 0;
+        
         for (RKStation *apistation in result.array)
         {
-            Station *station = [self.fullstationdict objectForKey:apistation.iid];
-            station.total = apistation.tot;
-            station.currentbikes = apistation.sbi;
-            station.emptyslots = apistation.bemp;
+            if ([self.fullstationdict objectForKey:apistation.iid])
+            {
+                //station exists in full list, proceed as normal
+                Station *station = [self.fullstationdict objectForKey:apistation.iid];
+                station.total = apistation.tot;
+                station.currentbikes = apistation.sbi;
+                station.emptyslots = apistation.bemp;
+                [self.fullstationdict setObject:station forKey:station.sid];
+            }
+            else
+            {
+                //station doesn't exist in full list, need to update list first
+                need_full_update = 1;
+            }
             
-            [self.fullstationdict setObject:station forKey:station.sid];
-            
+        }
+        
+        if (need_full_update==0)
+        {
+            //all listings match, can draw the data to map
+            [self drawStationToMap];
             NSDate *rightnow = [NSDate date];
             NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
             [defaults setObject:rightnow forKey:@"lastrefreshdate"];
             [defaults synchronize];
         }
-        [self drawStationToMap];
+        else
+        {
+            //mismatch, need to update full listing first
+            [self setupFullStationList: 0];
+        }
         
     } failure:^(RKObjectRequestOperation *operation, NSError *error) {
         RKLogError(@"Operation failed with error: %@", error);
@@ -434,15 +451,30 @@ didUpdateUserLocation:
 
         [self.nearbystationarray removeAllObjects];
         
+        //flag for stations not found, implying need for full update of station listing
+        int need_full_update = 0;
+        
         for (RKStation *apistation in result.array)
         {
-            Station *station = [self.fullstationdict objectForKey:apistation.iid];
-            station.total = apistation.tot;
-            station.currentbikes = apistation.sbi;
-            station.emptyslots = apistation.bemp;
-            station.distance = apistation.distance;
-            [self.nearbystationarray addObject:station];
-            
+            if ([self.fullstationdict objectForKey:apistation.iid])
+            {
+                //station exists in full list, proceed as normal
+                Station *station = [self.fullstationdict objectForKey:apistation.iid];
+                station.total = apistation.tot;
+                station.currentbikes = apistation.sbi;
+                station.emptyslots = apistation.bemp;
+                station.distance = apistation.distance;
+                [self.nearbystationarray addObject:station];
+            }
+            else
+            {
+                //station doesn't exist in full list, need to update list first
+                need_full_update = 1;
+            }
+        }
+        if (need_full_update==1)
+        {
+            [self setupFullStationList: 1];
         }
         [self.nearby_list_table reloadData];
         
@@ -451,6 +483,85 @@ didUpdateUserLocation:
     }];
     [operation start];
 }
+
+-(void) setupFullStationList: (int)requester
+{
+    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKStation class]];
+    [mapping addAttributeMappingsFromDictionary:@{
+                                                  @"iid":@"iid",
+                                                  @"lat":@"lat",
+                                                  @"lng":@"lng",
+                                                  @"sna":@"sna",
+                                                  @"snaen":@"snaen",
+                                                  @"sarea":@"sarea",
+                                                  @"sareaen":@"sareaen",
+                                                  @"ar":@"ar",
+                                                  @"aren":@"aren"
+                                                  }];
+    
+    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:mapping method:RKRequestMethodGET pathPattern:nil keyPath:@"stations" statusCodes:nil];
+    NSURL *url = [NSURL URLWithString:@"http://app.tapgo.cc/api/youbike/1/station"];
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
+    NSString *nonce = [[NSUUID UUID] UUIDString];
+    NSData *nonceData = [nonce dataUsingEncoding:NSUTF8StringEncoding];
+    NSString *base64Nonce = [nonceData base64EncodedStringWithOptions:0];
+    
+    ISO8601DateFormatter *formatter = [[ISO8601DateFormatter alloc] init];
+    formatter.includeTime = true;
+    NSString *createdat = [formatter stringFromDate:[NSDate date]];
+    
+    [request setValue:@"OWIwNTgyYjU4MDQ5ZDJkMjg3NmI2Nzc0OThkNDM0" forHTTPHeaderField:@"x-appgo-appid"];
+    [request setValue:base64Nonce forHTTPHeaderField:@"x-appgo-nonce"];
+    [request setValue:createdat forHTTPHeaderField:@"x-appgo-createdat"];
+    NSString *source = [nonce stringByAppendingString:[createdat stringByAppendingString:@"YjMzYzUyMmNmMDBkMWU1MmZmYzNlNGNlYTNjZjk2" ]];
+    NSData *data = [source dataUsingEncoding:NSUTF8StringEncoding];
+    uint8_t digest[CC_SHA1_DIGEST_LENGTH];
+    CC_SHA1(data.bytes, data.length, digest);
+    NSData *digestData = [NSData dataWithBytes:(const void *)digest length:CC_SHA1_DIGEST_LENGTH];
+    NSString *digestString = [digestData base64EncodedStringWithOptions:0];
+    NSLog(@"digestString: %@", digestString);
+    
+    [request setValue:digestString forHTTPHeaderField:@"x-appgo-digest"];
+    
+    RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[responseDescriptor]];
+    
+    [operation setCompletionBlockWithSuccess:^(RKObjectRequestOperation *operation, RKMappingResult *result) {
+        [self.fullstationdict removeAllObjects];
+        
+        for (RKStation *apistation in result.array)
+        {
+            NSManagedObjectContext *localContext = [NSManagedObjectContext MR_contextForCurrentThread];
+            Station *station = [Station MR_createEntity];
+            station.lat = apistation.lat;
+            station.lon = apistation.lng;
+            station.name_ch = apistation.sna;
+            station.name_en = apistation.snaen;
+            station.district_ch = apistation.sarea;
+            station.district_en = apistation.sareaen;
+            station.description_ch = apistation.ar;
+            station.description_en = apistation.aren;
+            station.sid = apistation.iid;
+            
+            [self.fullstationdict setObject:station forKey:station.sid];
+            
+            NSDate *rightnow = [NSDate date];
+            NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+            [defaults setObject:rightnow forKey:@"lastupdatedate"];
+            [defaults synchronize];
+            
+            [localContext MR_saveToPersistentStoreAndWait];
+        }
+        if (requester==0)
+        {
+            [self setupDynamicList];
+        }
+        
+    } failure:^(RKObjectRequestOperation *operation, NSError *error) {
+        RKLogError(@"Operation failed with error: %@", error);
+    }];
+    [operation start];
+}
+
 
 - (void) drawStationToMap
 {
@@ -1279,88 +1390,6 @@ didUpdateUserLocation:
     [[UIApplication sharedApplication] openURL:[NSURL URLWithString:str]];
 }
 
-//temp method
-- (void) upload_poi
-{
-    /*
-    NSLog(@"poi upload");
-    PFObject *poi = [PFObject objectWithClassName:@"poi"];
-    poi[@"name"] = @"寶藏巖";
-    poi[@"name_en"] = @"Treasure Hill";
-    poi[@"author"] = @"S.Lin";
-    poi[@"author_en"] = @"S.Lin";
-    poi[@"description"] = @"依山傍水的老聚落，新注入了來自各國藝文人士的創作能量，值得您一訪！這是臺北近年來都市更新最為成功的例子之一，也是新店溪畔不可錯過的絕美景點。";
-    poi[@"description_en"] = @"Once just an old cluster of buildings on a hill overlooking the edge of Taipei. Recent urban renovations have turned this hill into a hip riverside attraction. One of the best spots that even Taipei locals sometimes don't know about.";
-    poi[@"phone"] = @"0975087264";
-    poi[@"address"] = @"大安區金華街522號";
-    poi[@"link"] = @"http://tapgo.cc";
-    PFGeoPoint *location = [PFGeoPoint geoPointWithLatitude:25.01122 longitude:121.53318];
-    poi[@"location"] = location;
-    UIImage *image = [UIImage imageNamed:@"poi_nightview"];
-    NSData *imageData = UIImagePNGRepresentation(image);
-    PFFile *imageFile = [PFFile fileWithName:@"poi_nightview.png" data:imageData];
-    poi[@"image"] = imageFile;
-    
-    [poi saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-        if (succeeded) {
-            NSLog(@"poi post success");
-        } else {
-            NSLog(@"poi post error: %@", error);
-        }
-    }];
-     */
-}
-
-//temp method
-- (void) upload_trip
-{
-    NSLog(@"upload trip");
-    
-    PFObject *trip = [PFObject objectWithoutDataWithClassName:@"trip" objectId:@"fZzNvfsByc"];
-    //PFObject *poi1 = [PFObject objectWithoutDataWithClassName:@"poi" objectId:@"rwpfOOTpk2"];
-    //PFObject *poi2 = [PFObject objectWithoutDataWithClassName:@"poi" objectId:@"5fnFzcOEje"];
-    //PFObject *poi3 = [PFObject objectWithoutDataWithClassName:@"poi" objectId:@"1XFjkwHpo6"];
-    //NSArray *poiarray = [[NSArray alloc] initWithObjects:poi2, poi3, poi1, nil];
-    UIImage *image1 = [UIImage imageNamed:@"trip_nightlife_thumb"];
-    NSData *imageData1 = UIImagePNGRepresentation(image1);
-    PFFile *imageFile1 = [PFFile fileWithName:@"trip_nightlife_thumb.png" data:imageData1];
-
-    trip[@"thumb"] = imageFile1;
-    [trip saveInBackground];
-    
-    /*
-    PFObject *trip = [PFObject objectWithClassName:@"trip"];
-    trip[@"name"] = @"時尚東區單車遊";
-    trip[@"name_en"] = @"The east side: hip, young, exciting";
-    trip[@"author"] = @"CSJ";
-    trip[@"author_en"] = @"CSJ";
-    trip[@"description"] = @"喜歡購物的你，一條路線滿足你對國際精品的嚮往&把玩特色文創商品的驚喜。";
-    trip[@"description_en"] = @"Performance arts, fusion cuisine, and shopping. If you enjoy a more playful side of Taipei then you simply must try this trip!";
-    trip[@"duration"] = @"3-4小時";
-    trip[@"duration_en"] = @"3-4 hours";
-    PFObject *poi1 = [PFObject objectWithoutDataWithClassName:@"poi" objectId:@"Q4D4QUQ0ER"];
-    PFObject *poi2 = [PFObject objectWithoutDataWithClassName:@"poi" objectId:@"kzmWhttrPX"];
-    PFObject *poi3 = [PFObject objectWithoutDataWithClassName:@"poi" objectId:@"mcaU3P0tYx"];
-
-    NSArray *poiarray = [[NSArray alloc] initWithObjects:poi1, poi2, poi3, nil];
-    trip[@"pois"] = poiarray;
-    
-    UIImage *image1 = [UIImage imageNamed:@"trip_nightlife"];
-    NSData *imageData1 = UIImagePNGRepresentation(image1);
-    PFFile *imageFile1 = [PFFile fileWithName:@"trip_nightlife.png" data:imageData1];
-    trip[@"image"] = imageFile1;
-    
-    [trip saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-        if (succeeded) {
-            NSLog(@"trip post success");
-        } else {
-            NSLog(@"trip post error: %@", error);
-        }
-    }];
-    */
-}
-
-
 - (void) setup_trip_list
 {
     PFQuery *tripquery = [PFQuery queryWithClassName:@"trip"];
@@ -1391,7 +1420,6 @@ didUpdateUserLocation:
     controller.end_station = self.end_station;
     controller.tripheader = self.tripheader;
 }
-
 
 
 

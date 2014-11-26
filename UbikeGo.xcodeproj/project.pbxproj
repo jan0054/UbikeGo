@@ -113,7 +113,6 @@
 		B48C0DB2199DF26F004E1238 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = B48C0DB1199DF26F004E1238 /* libz.dylib */; };
 		B48C0DB4199DF27C004E1238 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B48C0DB3199DF27C004E1238 /* MobileCoreServices.framework */; };
 		B48C0DB6199DF289004E1238 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B48C0DB5199DF289004E1238 /* Security.framework */; };
-		B48C0DB8199DF293004E1238 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B48C0DB7199DF293004E1238 /* StoreKit.framework */; };
 		B48C0DBA199DF29D004E1238 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B48C0DB9199DF29D004E1238 /* SystemConfiguration.framework */; };
 		B48C0DC4199E0FDB004E1238 /* tpe_101.png in Resources */ = {isa = PBXBuildFile; fileRef = B48C0DC1199E0FDB004E1238 /* tpe_101.png */; };
 		B48C0DC5199E0FDB004E1238 /* tpe_gov.png in Resources */ = {isa = PBXBuildFile; fileRef = B48C0DC2199E0FDB004E1238 /* tpe_gov.png */; };
@@ -169,6 +168,7 @@
 		B4D25301198635A9006E9E12 /* arrow_down@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B4D252FF198635A9006E9E12 /* arrow_down@2x.png */; };
 		B4D25302198635A9006E9E12 /* arrow_up@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B4D25300198635A9006E9E12 /* arrow_up@2x.png */; };
 		B4D25329198679E1006E9E12 /* RKWeather.m in Sources */ = {isa = PBXBuildFile; fileRef = B4D25328198679E1006E9E12 /* RKWeather.m */; };
+		B4E0D0BC1A23170C000AFE9C /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B4E0D0BB1A23170C000AFE9C /* StoreKit.framework */; };
 		C8F855EA398443729FAD1108 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 47E642AB1BF54703A4772E50 /* libPods.a */; };
 /* End PBXBuildFile section */
 
@@ -303,7 +303,6 @@
 		B48C0DB1199DF26F004E1238 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		B48C0DB3199DF27C004E1238 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
 		B48C0DB5199DF289004E1238 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
-		B48C0DB7199DF293004E1238 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		B48C0DB9199DF29D004E1238 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		B48C0DC1199E0FDB004E1238 /* tpe_101.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = tpe_101.png; sourceTree = "<group>"; };
 		B48C0DC2199E0FDB004E1238 /* tpe_gov.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = tpe_gov.png; sourceTree = "<group>"; };
@@ -371,6 +370,8 @@
 		B4D25300198635A9006E9E12 /* arrow_up@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "arrow_up@2x.png"; sourceTree = "<group>"; };
 		B4D25327198679E1006E9E12 /* RKWeather.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKWeather.h; sourceTree = "<group>"; };
 		B4D25328198679E1006E9E12 /* RKWeather.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKWeather.m; sourceTree = "<group>"; };
+		B4E0D0BA1A2316F4000AFE9C /* UbikeGo.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = UbikeGo.entitlements; sourceTree = "<group>"; };
+		B4E0D0BB1A23170C000AFE9C /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -379,7 +380,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				B48C0DBA199DF29D004E1238 /* SystemConfiguration.framework in Frameworks */,
-				B48C0DB8199DF293004E1238 /* StoreKit.framework in Frameworks */,
 				B48C0DB6199DF289004E1238 /* Security.framework in Frameworks */,
 				B48C0DB4199DF27C004E1238 /* MobileCoreServices.framework in Frameworks */,
 				B48C0DB2199DF26F004E1238 /* libz.dylib in Frameworks */,
@@ -391,6 +391,7 @@
 				B48F521A196428E800A0DA9E /* MapKit.framework in Frameworks */,
 				B48F51E7196428C900A0DA9E /* CoreGraphics.framework in Frameworks */,
 				B48F51E9196428C900A0DA9E /* UIKit.framework in Frameworks */,
+				B4E0D0BC1A23170C000AFE9C /* StoreKit.framework in Frameworks */,
 				B48F51E5196428C900A0DA9E /* Foundation.framework in Frameworks */,
 				C8F855EA398443729FAD1108 /* libPods.a in Frameworks */,
 			);
@@ -434,8 +435,8 @@
 		B48F51E3196428C900A0DA9E /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				B4E0D0BB1A23170C000AFE9C /* StoreKit.framework */,
 				B48C0DB9199DF29D004E1238 /* SystemConfiguration.framework */,
-				B48C0DB7199DF293004E1238 /* StoreKit.framework */,
 				B48C0DB5199DF289004E1238 /* Security.framework */,
 				B48C0DB3199DF27C004E1238 /* MobileCoreServices.framework */,
 				B48C0DB1199DF26F004E1238 /* libz.dylib */,
@@ -457,6 +458,7 @@
 		B48F51EA196428C900A0DA9E /* UbikeGo */ = {
 			isa = PBXGroup;
 			children = (
+				B4E0D0BA1A2316F4000AFE9C /* UbikeGo.entitlements */,
 				B48C0D78199B5C59004E1238 /* Localizable.strings */,
 				B48F51F3196428C900A0DA9E /* AppDelegate.h */,
 				B48F51F4196428C900A0DA9E /* AppDelegate.m */,
@@ -714,6 +716,17 @@
 				TargetAttributes = {
 					B48F51E0196428C900A0DA9E = {
 						DevelopmentTeam = GW5Z7US9NS;
+						SystemCapabilities = {
+							com.apple.InAppPurchase = {
+								enabled = 1;
+							};
+							com.apple.Maps.iOS = {
+								enabled = 1;
+							};
+							com.apple.VPNLite = {
+								enabled = 0;
+							};
+						};
 					};
 					B48F5201196428C900A0DA9E = {
 						TestTargetID = B48F51E0196428C900A0DA9E;
@@ -1018,7 +1031,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
 				ONLY_ACTIVE_ARCH = YES;
-				PROVISIONING_PROFILE = "2229b88c-5004-4fad-af29-a9898663e8c0";
+				PROVISIONING_PROFILE = "ad9f9ba9-dacf-4634-bc41-44dc58c084af";
 				SDKROOT = iphoneos;
 			};
 			name = Debug;
@@ -1051,7 +1064,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
-				PROVISIONING_PROFILE = "2229b88c-5004-4fad-af29-a9898663e8c0";
+				PROVISIONING_PROFILE = "ad9f9ba9-dacf-4634-bc41-44dc58c084af";
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
 			};
@@ -1064,6 +1077,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_IDENTITY = "iPhone Distribution: Tapgo Inc. (GW5Z7US9NS)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Tapgo Inc. (GW5Z7US9NS)";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
@@ -1072,7 +1086,7 @@
 				GCC_PREFIX_HEADER = "UbikeGo/UbikeGo-Prefix.pch";
 				INFOPLIST_FILE = "UbikeGo/UbikeGo-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "2229b88c-5004-4fad-af29-a9898663e8c0";
+				PROVISIONING_PROFILE = "ad9f9ba9-dacf-4634-bc41-44dc58c084af";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -1084,6 +1098,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_IDENTITY = "iPhone Distribution: Tapgo Inc. (GW5Z7US9NS)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Tapgo Inc. (GW5Z7US9NS)";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
@@ -1092,7 +1107,7 @@
 				GCC_PREFIX_HEADER = "UbikeGo/UbikeGo-Prefix.pch";
 				INFOPLIST_FILE = "UbikeGo/UbikeGo-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "2229b88c-5004-4fad-af29-a9898663e8c0";
+				PROVISIONING_PROFILE = "ad9f9ba9-dacf-4634-bc41-44dc58c084af";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
